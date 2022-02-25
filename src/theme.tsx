@@ -10,7 +10,7 @@ import { createTheme } from '@mui/material/styles'
 
 // Allow adapting MUI links to react-router-dom links
 const LinkBehavior = React.forwardRef<
-	any,
+	never,
 	Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
 >((props, ref) => {
 	const { href, ...other } = props
@@ -20,7 +20,6 @@ const LinkBehavior = React.forwardRef<
 LinkBehavior.displayName = 'LinkBehavior'
 
 const theme = createTheme({
-	type: 'dark',
 	palette: {
 		primary: {
 			main: colors.blueGrey[900],
@@ -31,12 +30,11 @@ const theme = createTheme({
 		},
 	},
 	components: {
-		MuiLink: {
-			defaultProps: {
-				// @ts-ignore
-				component: LinkBehavior,
-			},
-		},
+		// MuiLink: {
+		// 	defaultProps: {
+		// 		component: LinkBehavior,
+		// 	},
+		// },
 		MuiButtonBase: {
 			defaultProps: {
 				LinkComponent: LinkBehavior,
