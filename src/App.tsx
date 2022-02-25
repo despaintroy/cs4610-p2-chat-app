@@ -13,7 +13,7 @@ const App: FC = () => {
 					color='secondary'
 					onClick={(): void => console.log('Hello!')}
 				>
-					Say Hello!
+					Say Hello Everyone!
 				</Button>
 			</Container>
 		</div>
