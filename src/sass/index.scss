@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+:root {
+	font-family: 'Roboto', 'Franklin Gothic Medium', Tahoma, sans-serif !important;
+	-webkit-font-smoothing: antialiased !important;
+	-moz-osx-font-smoothing: grayscale !important;
+
+	::selection {
+		background-color: #1a237e !important;
+		color: #fff !important;
+	}
+}
+
+body {
+	margin: 0;
+	background-color: #263238 !important;
+	color: #fff;
+}
+
+a {
+	color: #fff;
+	text-decoration: none;
+	font-weight: bold;
+}
