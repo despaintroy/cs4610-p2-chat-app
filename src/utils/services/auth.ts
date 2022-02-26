@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { User } from './models'
 import {
 	AuthError,
+	createUserWithEmailAndPassword,
 	getAuth,
 	signInWithEmailAndPassword,
 	signOut as fireSignOut,
+	updateProfile,
 	User as FireUser,
 } from 'firebase/auth'
 import { firebaseApp } from './firebase'
@@ -13,7 +15,11 @@ import { getMessage } from './errors'
 export interface AuthContextType {
 	user: User | null | undefined
 	signIn: (email: string, password: string) => Promise<void>
-	signUp: (email: string, password: string, name: string) => Promise<void>
+	createAccount: (
+		email: string,
+		password: string,
+		name: string
+	) => Promise<void>
 	signOut: () => Promise<void>
 }
 
@@ -51,25 +57,26 @@ export const useAuth = (): AuthContextType => {
 		}
 	}
 
-	const signUp = (
+	const createAccount = async (
+		name: string,
 		email: string,
-		password: string,
-		name: string
+		password: string
 	): Promise<void> => {
-		console.log('signUp', email, password, name)
-		setUser({
-			id: '1',
-			lastSignIn: new Date(),
-			name: 'John Doe',
-			email: 'admin@example.com',
-			phone: '555-555-5555',
-		})
-		return Promise.resolve()
+		try {
+			const credential = await createUserWithEmailAndPassword(
+				auth,
+				email,
+				password
+			)
+			await updateProfile(credential.user, { displayName: name })
+		} catch (e) {
+			return Promise.reject(new Error(getMessage(e as AuthError)))
+		}
 	}
 
 	const signOut = (): Promise<void> => {
 		return fireSignOut(auth)
 	}
 
-	return { user, signIn, signUp, signOut }
+	return { user, signIn, createAccount, signOut }
 }

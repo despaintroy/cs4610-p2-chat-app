@@ -5,5 +5,5 @@ export const Paths = {
 		`/channel/${serverId}/${channelId}`,
 	account: '/account',
 	signin: '/signin',
-	signup: '/signup',
+	createAccount: '/create-account',
 }

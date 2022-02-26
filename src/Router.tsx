@@ -1,6 +1,6 @@
+import CreateAccount from 'components/containers/CreateAccount'
 import Home from 'components/containers/Home'
 import SignIn from 'components/containers/SignIn'
-import SignUp from 'components/containers/SignUp'
 import React, { createContext } from 'react'
 import { FC } from 'react'
 import {
@@ -17,7 +17,8 @@ import { User } from 'utils/services/models'
 export const AuthContext = createContext<AuthContextType>({
 	user: null,
 	signIn: (_a: string, _b: string): Promise<void> => Promise.resolve(),
-	signUp: (_a: string, _b: string): Promise<void> => Promise.resolve(),
+	createAccount: (_a: string, _b: string, _c: string): Promise<void> =>
+		Promise.resolve(),
 	signOut: (): Promise<void> => Promise.resolve(),
 })
 
@@ -43,7 +44,7 @@ const Router: FC = () => {
 				<Routes>
 					<Route path='*' element={<p>Page 404</p>} />
 					<Route path={Paths.signin} element={<SignIn />} />
-					<Route path={Paths.signup} element={<SignUp />} />
+					<Route path={Paths.createAccount} element={<CreateAccount />} />
 
 					{/* PROTECTED ROUTES */}
 					<Route element={<RequireAuth user={authContext.user} />}>
