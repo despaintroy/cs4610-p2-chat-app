@@ -3,7 +3,7 @@ import React from 'react'
 import { Alert } from '@mui/material'
 
 export default function FormErrorMessage(props: {
-	message: string
+	message?: string | null
 }): React.ReactElement {
 	const { message } = props
 

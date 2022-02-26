@@ -1,7 +1,11 @@
 import React, { useContext } from 'react'
 
 import { useFormik } from 'formik'
-import { FormikTextField, SubmitButton } from 'components/common/FormComponents'
+import {
+	FormErrorMessage,
+	FormikTextField,
+	SubmitButton,
+} from 'components/common/FormComponents'
 
 import { Box, Link } from '@mui/material'
 import * as yup from 'yup'
@@ -9,7 +13,7 @@ import * as yup from 'yup'
 import { Paths } from 'utils/Paths'
 import { useNavigate } from 'react-router-dom'
 import { FC } from 'react'
-import { AuthContext } from 'App'
+import { AuthContext } from 'Router'
 
 interface FormValues {
 	email: string
@@ -19,7 +23,7 @@ interface FormValues {
 const SignInForm: FC = (): React.ReactElement => {
 	const { signIn } = useContext(AuthContext)
 	const navigate = useNavigate()
-	// const [formError, setFormError] = React.useState('')
+	const [formError, setFormError] = React.useState<string | null>(null)
 
 	const formik = useFormik({
 		initialValues: {
@@ -31,8 +35,13 @@ const SignInForm: FC = (): React.ReactElement => {
 			password: yup.string().required('Required'),
 		}),
 		onSubmit: async (values: FormValues): Promise<void> => {
-			await signIn(values.email, values.password)
-			navigate(Paths.home)
+			setFormError(null)
+			try {
+				await signIn(values.email, values.password)
+				navigate(Paths.home)
+			} catch (e) {
+				setFormError((e as Error).message)
+			}
 		},
 	})
 
@@ -58,7 +67,7 @@ const SignInForm: FC = (): React.ReactElement => {
 				autoComplete='current-password'
 			/>
 
-			{/* <FormErrorMessage message={formError} /> */}
+			<FormErrorMessage message={formError} />
 			<SubmitButton isSubmitting={formik.isSubmitting} buttonText='Sign In' />
 
 			<Link href={Paths.signup} variant='body2'>

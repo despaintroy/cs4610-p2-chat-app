@@ -1,5 +1,5 @@
 import { Button } from '@mui/material'
-import { AuthContext } from 'App'
+import { AuthContext } from 'Router'
 import React, { useContext } from 'react'
 import { FC } from 'react'
 import { useNavigate } from 'react-router-dom'

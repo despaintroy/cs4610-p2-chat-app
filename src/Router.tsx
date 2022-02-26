@@ -7,7 +7,7 @@ import {
 	Navigate,
 	Outlet,
 	Route,
-	BrowserRouter as Router,
+	BrowserRouter,
 	Routes,
 } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
@@ -24,8 +24,6 @@ export const AuthContext = createContext<AuthContextType>({
 const RequireAuth: FC<{ user: User | null | undefined }> = props => {
 	const { user } = props
 
-	console.log('user', user)
-
 	// TODO: Loading screen
 	if (user === undefined) return <></>
 
@@ -36,12 +34,12 @@ const RequireAuth: FC<{ user: User | null | undefined }> = props => {
 	return <Outlet />
 }
 
-const App: FC = () => {
+const Router: FC = () => {
 	const authContext = useAuth()
 
 	return (
 		<AuthContext.Provider value={authContext}>
-			<Router>
+			<BrowserRouter>
 				<Routes>
 					<Route path='*' element={<p>Page 404</p>} />
 					<Route path={Paths.signin} element={<SignIn />} />
@@ -52,9 +50,9 @@ const App: FC = () => {
 						<Route path={Paths.home} element={<Home />} />
 					</Route>
 				</Routes>
-			</Router>
+			</BrowserRouter>
 		</AuthContext.Provider>
 	)
 }
 
-export default App
+export default Router
