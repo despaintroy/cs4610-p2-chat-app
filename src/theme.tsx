@@ -21,12 +21,9 @@ LinkBehavior.displayName = 'LinkBehavior'
 
 const theme = createTheme({
 	palette: {
+		mode: 'dark',
 		primary: {
-			main: colors.blueGrey[900],
-		},
-		secondary: {
-			main: colors.lightBlue[400],
-			dark: colors.lightBlue[500],
+			main: colors.lightBlue[500],
 		},
 	},
 	components: {
@@ -58,21 +55,18 @@ const theme = createTheme({
 		},
 	},
 	typography: {
-		allVariants: {
-			color: colors.blueGrey[200],
-		},
+		// allVariants: {
+		// 	color: colors.blueGrey[100],
+		// },
 		h1: {
-			color: colors.blueGrey[100],
 			fontSize: '1.8rem',
 			fontWeight: '500',
 		},
 		h2: {
-			color: colors.blueGrey[100],
 			fontSize: '1.3rem',
 			fontWeight: '500',
 		},
 		h3: {
-			color: colors.blueGrey[100],
 			fontSize: '1.1rem',
 			fontWeight: '500',
 		},

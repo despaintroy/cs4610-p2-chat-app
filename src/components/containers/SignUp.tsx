@@ -12,7 +12,7 @@ const SignUp: FC = () => {
 	return (
 		<Button
 			variant='contained'
-			color='secondary'
+			// color='secondary'
 			onClick={(): void => {
 				signUp('', '', '')
 				navigate(Paths.home)
