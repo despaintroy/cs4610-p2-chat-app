@@ -6,7 +6,20 @@ export interface User {
 	phone?: string | null
 }
 
-export interface Server {
-	id: number
+export interface Message {
+	id: string
+	user: User
+	timestamp: Date
+	content: string
+}
+export interface Channel {
+	id: string
 	name: string
+}
+
+export interface Server {
+	id: string
+	name: string
+	channels: Channel[]
+	users: User[]
 }

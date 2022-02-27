@@ -50,6 +50,7 @@ const Router: FC = () => {
 					<Route element={<RequireAuth user={authContext.user} />}>
 						<Route path={Paths.home} element={<Home />} />
 						<Route path={Paths.server} element={<Home />} />
+						<Route path={Paths.channel} element={<Home />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>
