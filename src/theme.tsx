@@ -13,7 +13,6 @@ const theme = createTheme({
 			styleOverrides: {
 				root: {
 					borderRadius: 5,
-					margin: '0.5rem',
 				},
 			},
 		},

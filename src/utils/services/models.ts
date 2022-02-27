@@ -5,3 +5,8 @@ export interface User {
 	email?: string | null
 	phone?: string | null
 }
+
+export interface Server {
+	id: number
+	name: string
+}
