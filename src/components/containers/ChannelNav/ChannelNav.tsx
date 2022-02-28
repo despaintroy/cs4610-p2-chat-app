@@ -1,16 +1,15 @@
 import {
-	Button,
 	List,
 	ListItem,
 	ListItemButton,
 	ListItemText,
+	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { AuthContext } from 'Router'
 import { Paths } from 'utils/Paths'
-import { ServersContext } from '../Home'
+import { ServersContext } from 'AuthHome'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
@@ -31,25 +30,31 @@ const ChannelNav: React.FC = () => {
 		return <></>
 	}
 
-	const { signOut } = useContext(AuthContext)
-
 	return (
 		<Box sx={{ minWidth: '250px', backgroundColor: '#2F3136' }}>
-			<Button onClick={signOut}>Sign Out</Button>
 			<List>
 				{channels.map(channel => {
 					const isSelected = channel.id === channelId
 					return (
-						<ListItem disablePadding key={channel.id}>
+						<ListItem disablePadding dense key={channel.id}>
 							<ListItemButton
 								selected={isSelected}
 								onClick={(): void =>
 									navigate(Paths.getChannelPath(serverId, channel.id))
 								}
 								classes={{ selected: 'channel-nav-selected' }}
-								sx={{ m: 1 }}
+								sx={{ mx: 1, my: '0.2rem' }}
 							>
-								<ListItemText primary={channel.name} />
+								<ListItemText
+									primary={
+										<Typography
+											fontWeight='bold'
+											color={isSelected ? 'white' : '#8f9296'}
+										>
+											{channel.name}
+										</Typography>
+									}
+								/>
 							</ListItemButton>
 						</ListItem>
 					)

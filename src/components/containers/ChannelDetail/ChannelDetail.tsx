@@ -1,17 +1,14 @@
 import { Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { FC, useContext, useEffect, useRef } from 'react'
-import { ServersContext } from '../Home'
+import { useParams } from 'react-router-dom'
+import { ServersContext } from 'AuthHome'
 
-export interface MessagesProps {
-	serverId: string | null
-	channelId: string | null
-}
-
-const ChannelDetail: FC<MessagesProps> = props => {
-	const { serverId, channelId } = props
+const ChannelDetail: FC = () => {
 	const servers = useContext(ServersContext) || []
 	const messagesEndRef = useRef<HTMLDivElement>(null)
+	const { serverId, channelId } =
+		useParams<{ serverId: string; channelId: string }>()
 
 	const currentServer = servers.find(server => server.id === serverId)
 	const channel = currentServer?.channels?.find(
@@ -29,7 +26,7 @@ const ChannelDetail: FC<MessagesProps> = props => {
 		: []
 
 	return (
-		<Box className='messages-container'>
+		<Box className='messages-container' sx={{ backgroundColor: '#37393e' }}>
 			{lotsMessages?.map((message, index) => (
 				<Box key={index} className='message'>
 					<Stack direction='row'>

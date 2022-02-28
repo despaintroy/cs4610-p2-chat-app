@@ -1,18 +1,14 @@
+import AuthHome from 'AuthHome'
+import Account from 'components/containers/Account'
+import ChannelDetail from 'components/containers/ChannelDetail'
 import CreateAccount from 'components/containers/CreateAccount'
 import Home from 'components/containers/Home'
 import SignIn from 'components/containers/SignIn'
 import React, { createContext } from 'react'
 import { FC } from 'react'
-import {
-	Navigate,
-	Outlet,
-	Route,
-	BrowserRouter,
-	Routes,
-} from 'react-router-dom'
+import { Route, BrowserRouter, Routes } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
 import { AuthContextType, useAuth } from 'utils/services/auth'
-import { User } from 'utils/services/models'
 
 export const AuthContext = createContext<AuthContextType>({
 	user: null,
@@ -21,19 +17,6 @@ export const AuthContext = createContext<AuthContextType>({
 		Promise.resolve(),
 	signOut: (): Promise<void> => Promise.resolve(),
 })
-
-const RequireAuth: FC<{ user: User | null | undefined }> = props => {
-	const { user } = props
-
-	// TODO: Loading screen
-	if (user === undefined) return <></>
-
-	if (user === null) {
-		return <Navigate to={Paths.signin} />
-	}
-
-	return <Outlet />
-}
 
 const Router: FC = () => {
 	const authContext = useAuth()
@@ -47,10 +30,11 @@ const Router: FC = () => {
 					<Route path={Paths.createAccount} element={<CreateAccount />} />
 
 					{/* PROTECTED ROUTES */}
-					<Route element={<RequireAuth user={authContext.user} />}>
+					<Route element={<AuthHome user={authContext.user} />}>
 						<Route path={Paths.home} element={<Home />} />
 						<Route path={Paths.server} element={<Home />} />
-						<Route path={Paths.channel} element={<Home />} />
+						<Route path={Paths.channel} element={<ChannelDetail />} />
+						<Route path={Paths.account} element={<Account />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>

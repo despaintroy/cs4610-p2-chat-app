@@ -1,4 +1,4 @@
-import { Person } from '@mui/icons-material'
+import { Add, Person } from '@mui/icons-material'
 import {
 	Avatar,
 	Badge,
@@ -9,10 +9,10 @@ import {
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
+import { ServersContext } from 'AuthHome'
 import React, { useContext } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
-import { ServersContext } from '../Home'
 
 const ServerNav: React.FC = () => {
 	const { serverId } = useParams<{ serverId: string }>()
@@ -24,7 +24,7 @@ const ServerNav: React.FC = () => {
 	const isAccountPage = location.pathname === Paths.account
 
 	return (
-		<Box>
+		<Box sx={{ backgroundColor: 'background.default' }}>
 			<List>
 				<ListItem
 					onClick={(): void => navigate(Paths.account)}
@@ -42,6 +42,7 @@ const ServerNav: React.FC = () => {
 							variant={isAccountPage ? 'rounded' : 'circular'}
 							sx={{
 								bgcolor: isAccountPage ? 'primary.main' : 'grey',
+								color: 'white',
 							}}
 						>
 							<Person />
@@ -66,7 +67,7 @@ const ServerNav: React.FC = () => {
 								disableInteractive
 							>
 								<Badge
-									invisible={isSelected}
+									invisible={isSelected || server.id !== '1'}
 									color='warning'
 									overlap='circular'
 									variant='dot'
@@ -75,6 +76,7 @@ const ServerNav: React.FC = () => {
 										variant={isSelected ? 'rounded' : 'circular'}
 										sx={{
 											bgcolor: isSelected ? 'primary.main' : 'grey',
+											color: 'white',
 										}}
 									>
 										{server.name?.substring(0, 1)}
@@ -84,6 +86,23 @@ const ServerNav: React.FC = () => {
 						</ListItem>
 					)
 				})}
+				<ListItem
+					sx={{
+						cursor: 'pointer',
+					}}
+					onClick={(): void => alert('Not Implemented')}
+				>
+					<Tooltip
+						title={<Typography p={'8px'}>Create Server</Typography>}
+						placement='right'
+						arrow
+						disableInteractive
+					>
+						<Avatar>
+							<Add sx={{ color: 'white' }} />
+						</Avatar>
+					</Tooltip>
+				</ListItem>
 			</List>
 		</Box>
 	)
