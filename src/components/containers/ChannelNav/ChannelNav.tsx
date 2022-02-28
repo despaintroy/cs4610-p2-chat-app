@@ -1,16 +1,19 @@
 import { List, ListItem, ListItemButton, ListItemText } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
-import { Channel } from 'utils/services/models'
+import React, { useContext } from 'react'
+import { ServersContext } from '../Home'
 
 export interface ChannelNavProps {
-	channels: Channel[]
+	selectedServerId: string | null
 	selectedChannelId: string | null
 	setSelectedChannelId: (channelId: string) => void
 }
 
 const ChannelNav: React.FC<ChannelNavProps> = props => {
-	const { channels, selectedChannelId, setSelectedChannelId } = props
+	const { selectedServerId, selectedChannelId, setSelectedChannelId } = props
+	const channels =
+		useContext(ServersContext)?.find(server => server.id === selectedServerId)
+			?.channels || []
 
 	return (
 		<Box sx={{ minWidth: '250px', backgroundColor: '#2F3136' }}>

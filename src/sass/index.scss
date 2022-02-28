@@ -7,7 +7,7 @@
 	-moz-osx-font-smoothing: grayscale !important;
 
 	::selection {
-		background-color: #1a237e !important;
+		background-color: #03a9f4 !important;
 		color: #fff !important;
 	}
 }
@@ -29,4 +29,26 @@ a {
 .channel-nav-selected {
 	background-color: #222222 !important;
 	color: #03a9f4 !important;
+}
+
+.messages-container {
+	background-color: #37393e;
+	width: 100%;
+	height: 100%;
+	overflow-y: scroll;
+}
+
+.message {
+	padding: 0.5rem 1rem;
+	margin: 0.5rem 0;
+	.user-name {
+		font-weight: bold;
+		cursor: pointer;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+	&:hover {
+		background-color: #32353a !important;
+	}
 }

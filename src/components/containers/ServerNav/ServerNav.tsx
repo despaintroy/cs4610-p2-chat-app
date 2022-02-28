@@ -8,16 +8,16 @@ import {
 import { Box } from '@mui/system'
 import React, { useContext } from 'react'
 import { AuthContext } from 'Router'
-import { Server } from 'utils/services/models'
+import { ServersContext } from '../Home'
 
 export interface ServerNavProps {
-	servers: Server[]
 	selectedServerId: string | null
 	setSelectedServerId: (serverId: string) => void
 }
 
 const ServerNav: React.FC<ServerNavProps> = props => {
-	const { servers, selectedServerId, setSelectedServerId } = props
+	const { selectedServerId, setSelectedServerId } = props
+	const servers = useContext(ServersContext) || []
 
 	const { signOut } = useContext(AuthContext)
 

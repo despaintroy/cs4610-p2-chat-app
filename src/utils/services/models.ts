@@ -6,20 +6,26 @@ export interface User {
 	phone?: string | null
 }
 
+export interface PublicProfile {
+	userId: string
+	name?: string | null
+}
+
 export interface Message {
 	id: string
-	user: User
-	timestamp: Date
-	content: string
+	userId?: string
+	timestamp?: Date
+	content?: string
 }
 export interface Channel {
 	id: string
-	name: string
+	name?: string
+	messages?: Message[]
 }
 
 export interface Server {
 	id: string
-	name: string
-	channels: Channel[]
-	users: User[]
+	name?: string
+	channels?: Channel[]
+	userProfiles?: PublicProfile[]
 }
