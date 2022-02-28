@@ -1,6 +1,13 @@
-import { List, ListItem, ListItemButton, ListItemText } from '@mui/material'
+import {
+	Button,
+	List,
+	ListItem,
+	ListItemButton,
+	ListItemText,
+} from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useContext } from 'react'
+import { AuthContext } from 'Router'
 import { ServersContext } from '../Home'
 
 export interface ChannelNavProps {
@@ -15,8 +22,11 @@ const ChannelNav: React.FC<ChannelNavProps> = props => {
 		useContext(ServersContext)?.find(server => server.id === selectedServerId)
 			?.channels || []
 
+	const { signOut } = useContext(AuthContext)
+
 	return (
 		<Box sx={{ minWidth: '250px', backgroundColor: '#2F3136' }}>
+			<Button onClick={signOut}>Sign Out</Button>
 			<List>
 				{channels.map(channel => (
 					<ListItem disablePadding key={channel.id}>

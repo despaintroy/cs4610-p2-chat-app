@@ -1,13 +1,15 @@
+import { Person } from '@mui/icons-material'
 import {
-	Button,
+	Avatar,
+	Badge,
+	Divider,
 	List,
 	ListItem,
-	ListItemButton,
-	ListItemText,
+	Tooltip,
+	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useContext } from 'react'
-import { AuthContext } from 'Router'
 import { ServersContext } from '../Home'
 
 export interface ServerNavProps {
@@ -19,22 +21,59 @@ const ServerNav: React.FC<ServerNavProps> = props => {
 	const { selectedServerId, setSelectedServerId } = props
 	const servers = useContext(ServersContext) || []
 
-	const { signOut } = useContext(AuthContext)
-
 	return (
-		<Box sx={{ minWidth: '250px' }}>
-			<Button onClick={signOut}>Sign Out</Button>
+		<Box>
 			<List>
+				<ListItem
+					sx={{
+						cursor: 'pointer',
+					}}
+				>
+					<Tooltip
+						title={<Typography p={'8px'}>Profile</Typography>}
+						placement='right'
+						arrow
+						disableInteractive
+					>
+						<Avatar>
+							<Person />
+						</Avatar>
+					</Tooltip>
+				</ListItem>
+				<Divider sx={{ m: 1 }} />
 				{servers.map(server => (
-					<ListItem disablePadding key={server.id}>
-						<ListItemButton
-							selected={server.id === selectedServerId}
-							onClick={(): void => setSelectedServerId(server.id)}
-							classes={{ selected: 'server-nav-selected' }}
-							sx={{ m: 1 }}
+					<ListItem
+						key={server.id}
+						onClick={(): void => setSelectedServerId(server.id)}
+						sx={{
+							cursor: 'pointer',
+						}}
+					>
+						<Tooltip
+							title={<Typography p={'8px'}>{server.name}</Typography>}
+							placement='right'
+							arrow
+							disableInteractive
 						>
-							<ListItemText primary={server.name} />
-						</ListItemButton>
+							<Badge
+								invisible={server.id === selectedServerId}
+								color='warning'
+								overlap='circular'
+								variant='dot'
+							>
+								<Avatar
+									variant={
+										server.id === selectedServerId ? 'rounded' : 'circular'
+									}
+									sx={{
+										bgcolor:
+											server.id === selectedServerId ? 'primary.main' : 'grey',
+									}}
+								>
+									{server.name?.substring(0, 1)}
+								</Avatar>
+							</Badge>
+						</Tooltip>
 					</ListItem>
 				))}
 			</List>

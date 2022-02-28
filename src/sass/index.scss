@@ -52,3 +52,10 @@ a {
 		background-color: #32353a !important;
 	}
 }
+
+.MuiAvatar-root {
+	transition: border-radius 0.2s ease-in-out;
+	&:hover:not(.MuiAvatar-rounded) {
+		border-radius: 35%;
+	}
+}

@@ -43,7 +43,7 @@ const ChannelDetail: FC<MessagesProps> = props => {
 						<Box className='time' sx={{ ml: 'auto' }}>
 							<Typography variant='caption' color='text.disabled'>
 								{(message.timestamp &&
-									new Date(message.timestamp).toISOString()) ||
+									new Date(message.timestamp).toISOString().split('T')[0]) ||
 									'-'}
 							</Typography>
 						</Box>
