@@ -9,6 +9,7 @@ export interface User {
 export interface PublicProfile {
 	userId: string
 	name?: string | null
+	profileImage?: string | null
 }
 
 export interface Message {
