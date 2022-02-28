@@ -10,21 +10,24 @@ import {
 } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useContext } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Paths } from 'utils/Paths'
 import { ServersContext } from '../Home'
 
-export interface ServerNavProps {
-	selectedServerId: string | null
-	setSelectedServerId: (serverId: string) => void
-}
+const ServerNav: React.FC = () => {
+	const { serverId } = useParams<{ serverId: string }>()
+	const location = useLocation()
+	const navigate = useNavigate()
 
-const ServerNav: React.FC<ServerNavProps> = props => {
-	const { selectedServerId, setSelectedServerId } = props
 	const servers = useContext(ServersContext) || []
+
+	const isAccountPage = location.pathname === Paths.account
 
 	return (
 		<Box>
 			<List>
 				<ListItem
+					onClick={(): void => navigate(Paths.account)}
 					sx={{
 						cursor: 'pointer',
 					}}
@@ -35,47 +38,52 @@ const ServerNav: React.FC<ServerNavProps> = props => {
 						arrow
 						disableInteractive
 					>
-						<Avatar>
+						<Avatar
+							variant={isAccountPage ? 'rounded' : 'circular'}
+							sx={{
+								bgcolor: isAccountPage ? 'primary.main' : 'grey',
+							}}
+						>
 							<Person />
 						</Avatar>
 					</Tooltip>
 				</ListItem>
 				<Divider sx={{ m: 1 }} />
-				{servers.map(server => (
-					<ListItem
-						key={server.id}
-						onClick={(): void => setSelectedServerId(server.id)}
-						sx={{
-							cursor: 'pointer',
-						}}
-					>
-						<Tooltip
-							title={<Typography p={'8px'}>{server.name}</Typography>}
-							placement='right'
-							arrow
-							disableInteractive
+				{servers.map(server => {
+					const isSelected = server.id === serverId
+					return (
+						<ListItem
+							key={server.id}
+							onClick={(): void => navigate(Paths.getServerPath(server.id))}
+							sx={{
+								cursor: 'pointer',
+							}}
 						>
-							<Badge
-								invisible={server.id === selectedServerId}
-								color='warning'
-								overlap='circular'
-								variant='dot'
+							<Tooltip
+								title={<Typography p={'8px'}>{server.name}</Typography>}
+								placement='right'
+								arrow
+								disableInteractive
 							>
-								<Avatar
-									variant={
-										server.id === selectedServerId ? 'rounded' : 'circular'
-									}
-									sx={{
-										bgcolor:
-											server.id === selectedServerId ? 'primary.main' : 'grey',
-									}}
+								<Badge
+									invisible={isSelected}
+									color='warning'
+									overlap='circular'
+									variant='dot'
 								>
-									{server.name?.substring(0, 1)}
-								</Avatar>
-							</Badge>
-						</Tooltip>
-					</ListItem>
-				))}
+									<Avatar
+										variant={isSelected ? 'rounded' : 'circular'}
+										sx={{
+											bgcolor: isSelected ? 'primary.main' : 'grey',
+										}}
+									>
+										{server.name?.substring(0, 1)}
+									</Avatar>
+								</Badge>
+							</Tooltip>
+						</ListItem>
+					)
+				})}
 			</List>
 		</Box>
 	)
