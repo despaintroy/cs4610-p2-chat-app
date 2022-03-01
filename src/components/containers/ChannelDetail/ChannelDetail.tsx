@@ -1,6 +1,7 @@
 import {
 	Avatar,
 	Divider,
+	IconButton,
 	InputAdornment,
 	OutlinedInput,
 	Stack,
@@ -86,7 +87,9 @@ const ChannelDetail: FC = () => {
 						autoComplete='off'
 						endAdornment={
 							<InputAdornment position='end'>
-								<SendIcon />
+								<IconButton edge='end'>
+									<SendIcon />
+								</IconButton>
 							</InputAdornment>
 						}
 						sx={{ bgcolor: '#41444A' }}

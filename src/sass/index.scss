@@ -43,11 +43,11 @@ a {
 		}
 	}
 	&:hover {
-		background-color: #32353a !important;
+		background-color: #33353a !important;
 	}
 }
 
-.MuiAvatar-root {
+.server-nav .MuiAvatar-root {
 	transition: border-radius 0.2s ease-in-out;
 	&:hover:not(.MuiAvatar-rounded) {
 		border-radius: 35%;

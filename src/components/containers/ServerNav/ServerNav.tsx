@@ -24,7 +24,7 @@ const ServerNav: React.FC = () => {
 	const isAccountPage = location.pathname === Paths.account
 
 	return (
-		<Box sx={{ backgroundColor: 'background.default' }}>
+		<Box className='server-nav' sx={{ backgroundColor: 'background.default' }}>
 			<List>
 				<ListItem
 					onClick={(): void => navigate(Paths.account)}
