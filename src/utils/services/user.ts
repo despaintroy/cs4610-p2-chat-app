@@ -1,5 +1,4 @@
 import {
-	createUserWithEmailAndPassword,
 	updateEmail as updateFireEmail,
 	updatePassword as updateFirePassword,
 	updateProfile,
