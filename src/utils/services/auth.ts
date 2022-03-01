@@ -7,10 +7,10 @@ import {
 	signInWithEmailAndPassword,
 	signOut as fireSignOut,
 	updateProfile,
-	User as FireUser,
 } from 'firebase/auth'
 import { firebaseApp } from './firebase'
 import { getMessage } from './errors'
+import { formatUser } from './user'
 
 export interface AuthContextType {
 	user: User | null | undefined
@@ -23,22 +23,7 @@ export interface AuthContextType {
 	signOut: () => Promise<void>
 }
 
-const auth = getAuth(firebaseApp)
-
-const formatUser = (user: FireUser | null): User | null => {
-	if (user)
-		return {
-			id: user.uid,
-			name: user.displayName,
-			email: user.email,
-			phone: user.phoneNumber,
-			lastSignIn:
-				(user.metadata.lastSignInTime &&
-					new Date(user.metadata.lastSignInTime)) ||
-				undefined,
-		}
-	else return null
-}
+export const auth = getAuth(firebaseApp)
 
 export const useAuth = (): AuthContextType => {
 	const [user, setUser] = useState<User | null | undefined>(undefined)

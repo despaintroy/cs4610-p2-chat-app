@@ -33,7 +33,7 @@ const ServerNav: React.FC = () => {
 					}}
 				>
 					<Tooltip
-						title={<Typography p={'8px'}>Profile</Typography>}
+						title={<Typography p={'8px'}>Account</Typography>}
 						placement='right'
 						arrow
 						disableInteractive
