@@ -1,6 +1,7 @@
 import {
 	Avatar,
 	Divider,
+	FormHelperText,
 	IconButton,
 	InputAdornment,
 	OutlinedInput,
@@ -8,10 +9,17 @@ import {
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { FC, useContext, useEffect, useRef } from 'react'
+import React, {
+	FC,
+	useContext,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+} from 'react'
 import { useParams } from 'react-router-dom'
 import { ServersContext } from 'AuthHome'
 import SendIcon from '@mui/icons-material/Send'
+import { Message } from 'utils/services/models'
 
 const ChannelDetail: FC = () => {
 	const servers = useContext(ServersContext) || []
@@ -23,6 +31,11 @@ const ChannelDetail: FC = () => {
 	const channel = currentServer?.channels?.find(
 		channel => channel.id === channelId
 	)
+	const [messageDraft, setMessageDraft] = React.useState('')
+	const [messages, setMessages] = React.useState<Message[]>([
+		...(channel?.messages || []),
+		...(channel?.messages || []),
+	])
 
 	const scrollToBottom = (behavior: ScrollBehavior = 'auto'): void => {
 		messagesEndRef?.current?.scrollIntoView({ behavior })
@@ -30,18 +43,30 @@ const ChannelDetail: FC = () => {
 
 	useEffect(scrollToBottom, [channelId])
 
-	const lotsMessages = channel?.messages
-		? [...channel.messages, ...channel.messages, ...channel.messages]
-		: []
+	useLayoutEffect(scrollToBottom, [messages])
+
+	const handleSend = (): void => {
+		if (!messageDraft) return
+		setMessages(messages => [
+			...messages,
+			{
+				id: Math.random().toString(),
+				userId: '0',
+				timestamp: new Date(),
+				content: messageDraft,
+			},
+		])
+		setMessageDraft('')
+	}
 
 	return (
 		<Stack direction='row'>
-			<Stack direction='column'>
+			<Stack direction='column' sx={{ backgroundColor: '#37393e' }}>
 				<Box
 					className='messages-container'
-					sx={{ backgroundColor: '#37393e', pb: 2 }}
+					sx={{ pb: 2, mt: 'auto', width: '100%', overflowY: 'scroll' }}
 				>
-					{lotsMessages?.map((message, index) => {
+					{messages?.map((message, index) => {
 						const userProfile = currentServer?.userProfiles?.find(
 							profile => profile.userId === message.userId
 						)
@@ -80,20 +105,34 @@ const ChannelDetail: FC = () => {
 				</Box>
 				<Box sx={{ px: 2, pb: 3, bgcolor: '#37393e' }}>
 					<OutlinedInput
+						multiline
 						fullWidth
 						autoFocus
 						placeholder={`Message #${channel?.name}`}
 						size='small'
 						autoComplete='off'
+						value={messageDraft}
+						onChange={(e): void => setMessageDraft(e.target.value)}
+						onKeyDown={(e): void => {
+							if (e.key === 'Enter' && !e.shiftKey) {
+								e.preventDefault()
+								handleSend()
+							}
+						}}
 						endAdornment={
 							<InputAdornment position='end'>
-								<IconButton edge='end'>
+								<IconButton edge='end' onClick={handleSend}>
 									<SendIcon />
 								</IconButton>
 							</InputAdornment>
 						}
 						sx={{ bgcolor: '#41444A' }}
 					/>
+					<FormHelperText>
+						<Typography variant='caption' color='text.disabled'>
+							Press <b>Enter</b> to send, <b>Shift + Enter</b> for new line
+						</Typography>
+					</FormHelperText>
 				</Box>
 			</Stack>
 			<Box sx={{ minWidth: '250px', bgcolor: '#2f3136', p: 2 }}>
