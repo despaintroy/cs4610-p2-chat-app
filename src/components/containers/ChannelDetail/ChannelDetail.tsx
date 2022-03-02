@@ -15,40 +15,46 @@ import React, {
 	useEffect,
 	useLayoutEffect,
 	useRef,
+	useState,
 } from 'react'
 import { useParams } from 'react-router-dom'
 import { ServersContext } from 'AuthHome'
 import SendIcon from '@mui/icons-material/Send'
-import { Message } from 'utils/services/models'
+import { Channel, Message, Server } from 'utils/services/models'
+import parse from 'html-react-parser'
 
 const ChannelDetail: FC = () => {
-	const servers = useContext(ServersContext) || []
-	const messagesEndRef = useRef<HTMLDivElement>(null)
 	const { serverId, channelId } =
 		useParams<{ serverId: string; channelId: string }>()
+	const servers = useContext(ServersContext) || []
+	const messagesEndRef = useRef<HTMLDivElement>(null)
 
-	const currentServer = servers.find(server => server.id === serverId)
-	const channel = currentServer?.channels?.find(
-		channel => channel.id === channelId
-	)
-	const [messageDraft, setMessageDraft] = React.useState('')
-	const [messages, setMessages] = React.useState<Message[]>([
-		...(channel?.messages || []),
-		...(channel?.messages || []),
-	])
+	const [messageDraft, setMessageDraft] = useState('')
+	const [messages, setMessages] = useState<Message[] | undefined>()
+	const [server, setServer] = useState<Server | undefined>()
+	const [channel, setChannel] = useState<Channel | undefined>()
 
 	const scrollToBottom = (behavior: ScrollBehavior = 'auto'): void => {
 		messagesEndRef?.current?.scrollIntoView({ behavior })
 	}
 
-	useEffect(scrollToBottom, [channelId])
+	useEffect(() => {
+		const foundServer = servers.find(server => server.id === serverId)
+		const foundChannel = foundServer?.channels?.find(
+			channel => channel.id === channelId
+		)
+		setServer(foundServer)
+		setChannel(foundChannel)
+		foundChannel?.messages &&
+			setMessages([...foundChannel.messages, ...foundChannel.messages])
+	}, [channelId])
 
 	useLayoutEffect(scrollToBottom, [messages])
 
 	const handleSend = (): void => {
 		if (!messageDraft) return
 		setMessages(messages => [
-			...messages,
+			...(messages || []),
 			{
 				id: Math.random().toString(),
 				userId: '0',
@@ -67,7 +73,7 @@ const ChannelDetail: FC = () => {
 					sx={{ pb: 2, mt: 'auto', width: '100%', overflowY: 'scroll' }}
 				>
 					{messages?.map((message, index) => {
-						const userProfile = currentServer?.userProfiles?.find(
+						const userProfile = server?.userProfiles?.find(
 							profile => profile.userId === message.userId
 						)
 
@@ -94,7 +100,9 @@ const ChannelDetail: FC = () => {
 											</Box>
 										</Stack>
 										<Box className='content' color='#d9dadb'>
-											{message.content}
+											{parse(
+												message.content?.replace(/[\n\r]/g, '<br />') || ''
+											)}
 										</Box>
 									</Box>
 								</Stack>
@@ -141,7 +149,7 @@ const ChannelDetail: FC = () => {
 				</Typography>
 				<Divider sx={{ mt: 1, mb: 2 }} />
 				<Box>
-					{currentServer?.userProfiles?.map(profile => (
+					{server?.userProfiles?.map(profile => (
 						<Stack
 							key={profile.userId}
 							direction='row'
