@@ -129,7 +129,11 @@ const ChannelDetail: FC = () => {
 						}}
 						endAdornment={
 							<InputAdornment position='end'>
-								<IconButton edge='end' onClick={handleSend}>
+								<IconButton
+									edge='end'
+									onClick={handleSend}
+									disabled={!messageDraft}
+								>
 									<SendIcon />
 								</IconButton>
 							</InputAdornment>
