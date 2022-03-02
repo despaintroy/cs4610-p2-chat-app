@@ -3,6 +3,7 @@ import {
 	ListItem,
 	ListItemButton,
 	ListItemText,
+	Stack,
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
@@ -10,6 +11,7 @@ import React, { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
 import { ServersContext } from 'AuthHome'
+import { FiberManualRecord } from '@mui/icons-material'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
@@ -47,12 +49,24 @@ const ChannelNav: React.FC = () => {
 							>
 								<ListItemText
 									primary={
-										<Typography
-											fontWeight='bold'
-											color={isSelected ? 'white' : '#8f9296'}
+										<Stack
+											direction='row'
+											alignItems='center'
+											justifyContent='space-between'
 										>
-											{channel.name}
-										</Typography>
+											<Typography
+												fontWeight='bold'
+												color={isSelected ? 'white' : '#8f9296'}
+											>
+												{channel.name}
+											</Typography>
+											{channel.id === '2' && (
+												<FiberManualRecord
+													color='warning'
+													sx={{ fontSize: 10 }}
+												/>
+											)}
+										</Stack>
 									}
 								/>
 							</ListItemButton>
