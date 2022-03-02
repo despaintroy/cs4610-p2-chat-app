@@ -1,6 +1,5 @@
 import {
 	Avatar,
-	Divider,
 	FormHelperText,
 	IconButton,
 	InputAdornment,
@@ -68,6 +67,9 @@ const ChannelDetail: FC = () => {
 	return (
 		<Stack direction='row'>
 			<Stack direction='column' sx={{ backgroundColor: '#37393e' }}>
+				<Box sx={{ borderBottom: 1, borderColor: 'black', px: 2, py: 1 }}>
+					<Typography variant='h6'>{`# ${channel?.name}`}</Typography>
+				</Box>
 				<Box
 					className='messages-container'
 					sx={{ pb: 2, mt: 'auto', width: '100%', overflowY: 'scroll' }}
@@ -147,12 +149,8 @@ const ChannelDetail: FC = () => {
 					</FormHelperText>
 				</Box>
 			</Stack>
-			<Box sx={{ minWidth: '250px', bgcolor: '#2f3136', p: 2 }}>
-				<Typography variant='h6' color='text.primary'>
-					Server Members
-				</Typography>
-				<Divider sx={{ mt: 1, mb: 2 }} />
-				<Box>
+			<Box sx={{ minWidth: '250px', bgcolor: '#2f3136' }}>
+				<Box sx={{ p: 2 }}>
 					{server?.userProfiles?.map(profile => (
 						<Stack
 							key={profile.userId}

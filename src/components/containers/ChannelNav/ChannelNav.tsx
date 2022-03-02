@@ -7,20 +7,29 @@ import {
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useContext } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
-import { ServersContext } from 'AuthHome'
 import { FiberManualRecord } from '@mui/icons-material'
+import { servers } from 'utils/services/fakeData'
+import { Channel, Server } from 'utils/services/models'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
 		useParams<{ serverId: string; channelId: string }>()
 	const navigate = useNavigate()
 
-	const channels =
-		useContext(ServersContext)?.find(server => server.id === serverId)
-			?.channels || []
+	const [server, setServer] = React.useState<Server | undefined>(undefined)
+	const [channels, setChannels] = React.useState<Channel[] | undefined>(
+		undefined
+	)
+
+	useEffect(() => {
+		const foundServer = servers.find(server => server.id === serverId)
+		const foundChannels = foundServer?.channels
+		setServer(foundServer)
+		setChannels(foundChannels)
+	}, [serverId])
 
 	if (!serverId) {
 		navigate(Paths.home)
@@ -34,8 +43,11 @@ const ChannelNav: React.FC = () => {
 
 	return (
 		<Box sx={{ minWidth: '250px', backgroundColor: '#2F3136' }}>
+			<Box sx={{ borderBottom: 1, borderColor: 'black', px: 2, py: 1 }}>
+				<Typography variant='h6'>{server?.name}</Typography>
+			</Box>
 			<List>
-				{channels.map(channel => {
+				{channels?.map(channel => {
 					const isSelected = channel.id === channelId
 					return (
 						<ListItem disablePadding dense key={channel.id}>
@@ -58,7 +70,7 @@ const ChannelNav: React.FC = () => {
 												fontWeight='bold'
 												color={isSelected ? 'white' : '#8f9296'}
 											>
-												{channel.name}
+												{`# ${channel.name}`}
 											</Typography>
 											{channel.id === '2' && (
 												<FiberManualRecord
