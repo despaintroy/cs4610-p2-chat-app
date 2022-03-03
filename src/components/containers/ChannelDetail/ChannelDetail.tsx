@@ -150,7 +150,21 @@ const ChannelDetail: FC = () => {
 				</Box>
 			</Stack>
 			<Box sx={{ minWidth: '250px', bgcolor: '#2f3136' }}>
-				<Box sx={{ p: 2 }}>
+				<Box
+					sx={{
+						backgroundColor: '#37393e',
+						borderBottom: 1,
+						borderColor: 'black',
+						px: 2,
+						py: 1,
+					}}
+				>
+					<Typography variant='h6'>&nbsp;</Typography>
+				</Box>
+				<Box sx={{ px: 3, py: 1 }}>
+					<Typography variant='h6' color='text.disabled'>
+						Channel Members
+					</Typography>
 					{server?.userProfiles?.map(profile => (
 						<Stack
 							key={profile.userId}
