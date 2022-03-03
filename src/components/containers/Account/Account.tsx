@@ -2,6 +2,7 @@ import { Button, Container, Divider, Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { FC, useContext } from 'react'
 import { AuthContext } from 'Router'
+import PasswordForm from './PasswordForm'
 import ProfileForm from './ProfileForm'
 
 const Account: FC = () => {
@@ -22,11 +23,13 @@ const Account: FC = () => {
 					</Button>
 				</Stack>
 				<Divider sx={{ my: 2 }} />
-				<Box>
-					<Typography variant='h2' gutterBottom>
-						Profile
-					</Typography>
+				<Box sx={{ pt: 2 }}>
+					<Typography variant='h2'>Profile</Typography>
 					<ProfileForm />
+				</Box>
+				<Box sx={{ pt: 4 }}>
+					<Typography variant='h2'>Password</Typography>
+					<PasswordForm />
 				</Box>
 			</Container>
 		</Box>

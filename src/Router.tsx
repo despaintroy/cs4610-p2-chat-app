@@ -16,6 +16,7 @@ export const AuthContext = createContext<AuthContextType>({
 	createAccount: (_a: string, _b: string, _c: string): Promise<void> =>
 		Promise.resolve(),
 	signOut: (): Promise<void> => Promise.resolve(),
+	syncUser: (): Promise<void> => Promise.resolve(),
 })
 
 const Router: FC = () => {

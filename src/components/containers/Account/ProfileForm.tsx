@@ -13,10 +13,12 @@ import {
 import { updateEmail, updateName } from 'utils/services/user'
 import { getMessage } from 'utils/services/errors'
 import { AuthError } from 'firebase/auth'
+import FormSuccessMessage from 'components/common/FormComponents/FormSuccessMessage'
 
 const ProfileForm: FC = (): React.ReactElement => {
-	const { user } = useContext(AuthContext)
-	const [formError, setFormError] = React.useState('')
+	const { user, syncUser } = useContext(AuthContext)
+	const [errorMessage, setErrorMessage] = React.useState('')
+	const [successMessage, setSuccessMessage] = React.useState('')
 	const [hasChanged, setHasChanged] = React.useState(false)
 
 	if (!user) return <></>
@@ -33,7 +35,7 @@ const ProfileForm: FC = (): React.ReactElement => {
 			email: yup.string().required('Required').email('Email is invalid'),
 		}),
 		onSubmit: async (values): Promise<void> => {
-			setFormError('')
+			setErrorMessage('')
 			try {
 				await Promise.all([
 					user.name !== values.name
@@ -43,8 +45,11 @@ const ProfileForm: FC = (): React.ReactElement => {
 						? updateEmail(values.email)
 						: Promise.resolve(),
 				])
+				syncUser()
+				setSuccessMessage('Profile updated successfully')
+				setTimeout(() => setSuccessMessage(''), 4000)
 			} catch (e) {
-				return setFormError(getMessage(e as AuthError))
+				return setErrorMessage(getMessage(e as AuthError))
 			}
 		},
 	})
@@ -54,7 +59,7 @@ const ProfileForm: FC = (): React.ReactElement => {
 			setHasChanged(
 				user.name !== formik.values.name || user.email !== formik.values.email
 			),
-		[formik.values.name, formik.values.email]
+		[formik.values.name, formik.values.email, user.name, user.email]
 	)
 
 	return (
@@ -67,7 +72,8 @@ const ProfileForm: FC = (): React.ReactElement => {
 			<FormikTextField formik={formik} fieldName='name' label='Name' />
 			<FormikTextField formik={formik} fieldName='email' label='Email' />
 
-			<FormErrorMessage message={formError} />
+			<FormErrorMessage message={errorMessage} />
+			<FormSuccessMessage message={successMessage} />
 			<SubmitButton
 				isSubmitting={formik.isSubmitting}
 				buttonText='Save Changes'

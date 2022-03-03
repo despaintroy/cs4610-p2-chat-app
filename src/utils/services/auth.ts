@@ -21,6 +21,7 @@ export interface AuthContextType {
 		name: string
 	) => Promise<void>
 	signOut: () => Promise<void>
+	syncUser: () => void
 }
 
 export const auth = getAuth(firebaseApp)
@@ -28,11 +29,10 @@ export const auth = getAuth(firebaseApp)
 export const useAuth = (): AuthContextType => {
 	const [user, setUser] = useState<User | null | undefined>(undefined)
 
-	useEffect(() => {
-		auth.onAuthStateChanged(user => {
-			setUser(formatUser(user))
-		})
-	}, [])
+	useEffect(
+		() => auth.onAuthStateChanged(user => setUser(formatUser(user))),
+		[]
+	)
 
 	const signIn = async (email: string, password: string): Promise<void> => {
 		try {
@@ -63,5 +63,9 @@ export const useAuth = (): AuthContextType => {
 		return fireSignOut(auth)
 	}
 
-	return { user, signIn, createAccount, signOut }
+	const syncUser = (): void => {
+		setUser(formatUser(auth.currentUser))
+	}
+
+	return { user, signIn, createAccount, signOut, syncUser }
 }
