@@ -1,4 +1,12 @@
-import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import {
+	collection,
+	query,
+	where,
+	onSnapshot,
+	serverTimestamp,
+	addDoc,
+} from 'firebase/firestore'
+import { auth } from './auth'
 import { database } from './firebase'
 import { Message } from './models'
 
@@ -24,11 +32,27 @@ export const watchMessages = (
 			messages.push({
 				...(doc.data() as Omit<Message, 'id'>),
 				id: doc.id,
-				timestamp: doc.data().timestamp.toDate(),
+				timestamp: doc.data().timestamp?.toDate() || null,
 			})
 		})
 		setMessages(messages)
 	})
 
 	return unsubscribe
+}
+
+export const sendMessage = (
+	channelId: string,
+	content: string
+): Promise<void> => {
+	return new Promise((reject) => {
+		if (!auth.currentUser) return reject()
+
+		return addDoc(collection(database, 'messages'), {
+			userId: auth.currentUser.uid,
+			channelId,
+			content,
+			timestamp: serverTimestamp(),
+		})
+	})
 }

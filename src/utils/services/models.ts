@@ -16,7 +16,7 @@ export interface Message {
 	id: string
 	channelId: string
 	userId: string
-	timestamp: Date
+	timestamp: Date | null
 	content: string
 }
 export interface Channel {
