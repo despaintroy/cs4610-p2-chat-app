@@ -7,8 +7,15 @@ import { Navigate, Outlet, useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
 import { watchChannels } from 'utils/services/channels'
 import { watchMessages } from 'utils/services/messages'
-import { Channel, Message, Server, User } from 'utils/services/models'
+import {
+	Channel,
+	Message,
+	PublicProfile,
+	Server,
+	User,
+} from 'utils/services/models'
 import { watchServers } from 'utils/services/servers'
+import { getUserProfiles } from 'utils/services/user'
 
 export const ServersContext = React.createContext<Server[] | null>(null)
 
@@ -21,6 +28,7 @@ const AuthHome: FC<{ user: User | null | undefined }> = props => {
 	const [servers, setServers] = React.useState<Server[]>()
 	const [channels, setChannels] = React.useState<Channel[]>()
 	const [messages, setMessages] = React.useState<Message[]>()
+	const [userProfiles, setUserProfiles] = React.useState<PublicProfile[]>()
 
 	const [serverContext, setServerContext] = React.useState<Server[]>()
 
@@ -51,12 +59,21 @@ const AuthHome: FC<{ user: User | null | undefined }> = props => {
 		)
 	}, [channels])
 
+	// Get users profiles
 	useEffect(() => {
-		if (!servers || !channels || !messages) return
+		if (!servers?.length) return
+		const userIds = servers.flatMap(s => s?.users || [])
+		const uniqueUserIds = [...new Set(userIds)]
+		getUserProfiles(uniqueUserIds).then(profiles => setUserProfiles(profiles))
+	}, [servers])
+
+	useEffect(() => {
+		if (!servers || !channels || !messages || !userProfiles) return
 
 		setServerContext(
 			servers.map(s => ({
 				...s,
+				userProfiles: userProfiles.filter(p => s.users?.includes(p.id)),
 				channels: channels
 					.filter(c => c.serverId === s.id)
 					.map(c => ({
@@ -65,7 +82,7 @@ const AuthHome: FC<{ user: User | null | undefined }> = props => {
 					})),
 			}))
 		)
-	}, [servers, channels, messages])
+	}, [servers, channels, messages, userProfiles])
 
 	useEffect(
 		() => console.log('built server context', serverContext),

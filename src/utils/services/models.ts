@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface PublicProfile {
-	userId: string
+	id: string
 	name?: string | null
 	profileImage?: string | null
 }
@@ -30,5 +30,6 @@ export interface Server {
 	id: string
 	name: string
 	channels?: Channel[]
+	users?: string[]
 	userProfiles?: PublicProfile[]
 }

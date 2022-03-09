@@ -45,7 +45,7 @@ export const sendMessage = (
 	channelId: string,
 	content: string
 ): Promise<void> => {
-	return new Promise((reject) => {
+	return new Promise(reject => {
 		if (!auth.currentUser) return reject()
 
 		return addDoc(collection(database, 'messages'), {

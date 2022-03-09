@@ -5,7 +5,7 @@ import {
 	User as FireUser,
 } from 'firebase/auth'
 import { auth } from './auth'
-import { User } from './models'
+import { PublicProfile, User } from './models'
 
 export const formatUser = (user: FireUser | null): User | null => {
 	if (user)
@@ -34,3 +34,21 @@ export const updatePassword = (password: string): Promise<void> =>
 	auth.currentUser
 		? updateFirePassword(auth.currentUser, password)
 		: Promise.reject()
+
+export const getUserProfiles = async (
+	userIds: string[]
+): Promise<PublicProfile[]> => {
+	const res = await fetch(
+		'https://us-central1-cs4610-chat-app.cloudfunctions.net/app/getUserProfiles',
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ userIds }),
+		}
+	)
+	const data = await res.json()
+	console.log(data)
+	return data
+}

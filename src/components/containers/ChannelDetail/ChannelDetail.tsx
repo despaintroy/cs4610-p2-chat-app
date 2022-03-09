@@ -77,7 +77,7 @@ const ChannelDetail: FC = () => {
 						})
 						.map((message, index) => {
 							const userProfile = server?.userProfiles?.find(
-								profile => profile.userId === message.userId
+								profile => profile.id === message.userId
 							)
 
 							return (
@@ -168,7 +168,7 @@ const ChannelDetail: FC = () => {
 					</Typography>
 					{server?.userProfiles?.map(profile => (
 						<Stack
-							key={profile.userId}
+							key={profile.id}
 							direction='row'
 							alignItems='center'
 							sx={{ my: 1 }}
