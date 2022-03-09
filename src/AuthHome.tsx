@@ -5,12 +5,10 @@ import React, { useEffect } from 'react'
 import { FC } from 'react'
 import { Navigate, Outlet, useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
+import { watchChannels } from 'utils/services/channels'
+import { watchMessages } from 'utils/services/messages'
 import { Channel, Message, Server, User } from 'utils/services/models'
-import {
-	watchChannels,
-	watchMessages,
-	watchServers,
-} from 'utils/services/messaging'
+import { watchServers } from 'utils/services/servers'
 
 export const ServersContext = React.createContext<Server[] | null>(null)
 

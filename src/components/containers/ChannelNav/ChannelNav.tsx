@@ -43,7 +43,7 @@ const ChannelNav: React.FC = () => {
 			</Box>
 			<List>
 				{channels?.length === 0 && (
-					<Typography sx={{p: 2}}>TODO: create a new channel</Typography>
+					<Typography sx={{ p: 2 }}>TODO: create a new channel</Typography>
 				)}
 				{channels?.map(channel => {
 					const isSelected = channel.id === channelId
