@@ -7,17 +7,18 @@ import {
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
 import { FiberManualRecord } from '@mui/icons-material'
-import { servers } from 'utils/services/fakeData'
 import { Channel, Server } from 'utils/services/models'
+import { ServersContext } from 'AuthHome'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
 		useParams<{ serverId: string; channelId: string }>()
 	const navigate = useNavigate()
+	const servers = useContext(ServersContext) || []
 
 	const [server, setServer] = React.useState<Server | undefined>(undefined)
 	const [channels, setChannels] = React.useState<Channel[] | undefined>(
@@ -29,15 +30,9 @@ const ChannelNav: React.FC = () => {
 		const foundChannels = foundServer?.channels
 		setServer(foundServer)
 		setChannels(foundChannels)
-	}, [serverId])
+	}, [serverId, servers])
 
 	if (!serverId) {
-		navigate(Paths.home)
-		return <></>
-	}
-
-	if (!channelId) {
-		navigate(Paths.getServerPath(serverId))
 		return <></>
 	}
 
@@ -47,6 +42,9 @@ const ChannelNav: React.FC = () => {
 				<Typography variant='h6'>{server?.name}</Typography>
 			</Box>
 			<List>
+				{channels?.length === 0 && (
+					<Typography sx={{p: 2}}>TODO: create a new channel</Typography>
+				)}
 				{channels?.map(channel => {
 					const isSelected = channel.id === channelId
 					return (

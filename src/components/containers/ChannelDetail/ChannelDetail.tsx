@@ -44,9 +44,8 @@ const ChannelDetail: FC = () => {
 		)
 		setServer(foundServer)
 		setChannel(foundChannel)
-		foundChannel?.messages &&
-			setMessages([...foundChannel.messages, ...foundChannel.messages])
-	}, [channelId])
+		foundChannel?.messages && setMessages(foundChannel.messages)
+	}, [channelId, servers])
 
 	useLayoutEffect(scrollToBottom, [messages])
 
@@ -59,14 +58,18 @@ const ChannelDetail: FC = () => {
 				userId: '0',
 				timestamp: new Date(),
 				content: messageDraft,
+				channelId: channelId ?? '',
 			},
 		])
 		setMessageDraft('')
 	}
 
 	return (
-		<Stack direction='row'>
-			<Stack direction='column' sx={{ backgroundColor: '#37393e' }}>
+		<Stack direction='row' sx={{ width: '100%' }}>
+			<Stack
+				direction='column'
+				sx={{ width: '100%', backgroundColor: '#37393e' }}
+			>
 				<Box sx={{ borderBottom: 1, borderColor: 'black', px: 2, py: 1 }}>
 					<Typography variant='h6'>{`# ${channel?.name}`}</Typography>
 				</Box>

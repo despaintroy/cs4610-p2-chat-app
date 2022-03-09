@@ -14,19 +14,21 @@ export interface PublicProfile {
 
 export interface Message {
 	id: string
-	userId?: string
-	timestamp?: Date
-	content?: string
+	channelId: string
+	userId: string
+	timestamp: Date
+	content: string
 }
 export interface Channel {
 	id: string
-	name?: string
+	serverId: string
+	name: string
 	messages?: Message[]
 }
 
 export interface Server {
 	id: string
-	name?: string
+	name: string
 	channels?: Channel[]
 	userProfiles?: PublicProfile[]
 }
