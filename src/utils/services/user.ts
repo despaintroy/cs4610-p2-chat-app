@@ -4,8 +4,10 @@ import {
 	updateProfile,
 	User as FireUser,
 } from 'firebase/auth'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth } from './auth'
 import { User } from './models'
+import { storage } from './storage'
 
 export const formatUser = (user: FireUser | null): User | null => {
 	if (user)
@@ -33,4 +35,12 @@ export const updateEmail = (email: string): Promise<void> =>
 export const updatePassword = (password: string): Promise<void> =>
 	auth.currentUser
 		? updateFirePassword(auth.currentUser, password)
+		: Promise.reject()
+
+export const updateProfilePicture = (profilePicture: File): Promise<string> =>
+	auth.currentUser
+		? uploadBytes(
+				ref(storage, `${auth.currentUser.uid}/profile-picture`),
+				profilePicture
+			).then(snapshot => getDownloadURL(snapshot.ref))
 		: Promise.reject()
