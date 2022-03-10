@@ -21,6 +21,7 @@ import { ServersContext } from 'AuthHome'
 import SendIcon from '@mui/icons-material/Send'
 import { Channel, Message, Server } from 'utils/services/models'
 import parse from 'html-react-parser'
+import { sendMessage } from 'utils/services/messages'
 
 const ChannelDetail: FC = () => {
 	const { serverId, channelId } =
@@ -44,29 +45,23 @@ const ChannelDetail: FC = () => {
 		)
 		setServer(foundServer)
 		setChannel(foundChannel)
-		foundChannel?.messages &&
-			setMessages([...foundChannel.messages, ...foundChannel.messages])
-	}, [channelId])
+		foundChannel?.messages && setMessages(foundChannel.messages)
+	}, [channelId, servers])
 
 	useLayoutEffect(scrollToBottom, [messages])
 
 	const handleSend = (): void => {
-		if (!messageDraft) return
-		setMessages(messages => [
-			...(messages || []),
-			{
-				id: Math.random().toString(),
-				userId: '0',
-				timestamp: new Date(),
-				content: messageDraft,
-			},
-		])
+		if (!messageDraft || !channelId) return
+		sendMessage(channelId, messageDraft)
 		setMessageDraft('')
 	}
 
 	return (
-		<Stack direction='row'>
-			<Stack direction='column' sx={{ backgroundColor: '#37393e' }}>
+		<Stack direction='row' sx={{ width: '100%' }}>
+			<Stack
+				direction='column'
+				sx={{ width: '100%', backgroundColor: '#37393e' }}
+			>
 				<Box sx={{ borderBottom: 1, borderColor: 'black', px: 2, py: 1 }}>
 					<Typography variant='h6'>{`# ${channel?.name}`}</Typography>
 				</Box>
@@ -74,43 +69,49 @@ const ChannelDetail: FC = () => {
 					className='messages-container'
 					sx={{ pb: 2, mt: 'auto', width: '100%', overflowY: 'scroll' }}
 				>
-					{messages?.map((message, index) => {
-						const userProfile = server?.userProfiles?.find(
-							profile => profile.userId === message.userId
-						)
+					{messages
+						?.sort((a, b) => {
+							if (!a.timestamp) return 1
+							if (!b.timestamp) return -1
+							return Number(a.timestamp) - Number(b.timestamp)
+						})
+						.map((message, index) => {
+							const userProfile = server?.userProfiles?.find(
+								profile => profile.id === message.userId
+							)
 
-						return (
-							<Box key={index} className='message'>
-								<Stack direction='row'>
-									<Avatar
-										sx={{ mr: 2, mt: 1 }}
-										src={userProfile?.profileImage || undefined}
-									/>
-									<Box sx={{ width: '100%' }}>
-										<Stack direction='row'>
-											<Box className='user-name'>
-												{userProfile?.name || <i>Removed</i>}
+							return (
+								<Box key={index} className='message'>
+									<Stack direction='row'>
+										<Avatar
+											sx={{ mr: 2, mt: 1 }}
+											src={userProfile?.profileImage || undefined}
+										/>
+										<Box sx={{ width: '100%' }}>
+											<Stack direction='row'>
+												<Box className='user-name'>
+													{userProfile?.name || <i>Removed</i>}
+												</Box>
+												<Box className='time' sx={{ ml: 'auto' }}>
+													<Typography variant='caption' color='text.disabled'>
+														{(message.timestamp &&
+															new Date(message.timestamp)
+																.toISOString()
+																.split('T')[0]) ||
+															'-'}
+													</Typography>
+												</Box>
+											</Stack>
+											<Box className='content' color='#d9dadb'>
+												{parse(
+													message.content?.replace(/[\n\r]/g, '<br />') || ''
+												)}
 											</Box>
-											<Box className='time' sx={{ ml: 'auto' }}>
-												<Typography variant='caption' color='text.disabled'>
-													{(message.timestamp &&
-														new Date(message.timestamp)
-															.toISOString()
-															.split('T')[0]) ||
-														'-'}
-												</Typography>
-											</Box>
-										</Stack>
-										<Box className='content' color='#d9dadb'>
-											{parse(
-												message.content?.replace(/[\n\r]/g, '<br />') || ''
-											)}
 										</Box>
-									</Box>
-								</Stack>
-							</Box>
-						)
-					})}
+									</Stack>
+								</Box>
+							)
+						})}
 					<div ref={messagesEndRef} />
 				</Box>
 				<Box sx={{ px: 2, pb: 3, bgcolor: '#37393e' }}>
@@ -167,7 +168,7 @@ const ChannelDetail: FC = () => {
 					</Typography>
 					{server?.userProfiles?.map(profile => (
 						<Stack
-							key={profile.userId}
+							key={profile.id}
 							direction='row'
 							alignItems='center'
 							sx={{ my: 1 }}

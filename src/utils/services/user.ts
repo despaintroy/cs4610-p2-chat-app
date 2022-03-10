@@ -6,7 +6,7 @@ import {
 } from 'firebase/auth'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth } from './auth'
-import { User } from './models'
+import { PublicProfile, User } from './models'
 import { storage } from './storage'
 
 export const formatUser = (user: FireUser | null): User | null => {
@@ -37,10 +37,29 @@ export const updatePassword = (password: string): Promise<void> =>
 		? updateFirePassword(auth.currentUser, password)
 		: Promise.reject()
 
-export const updateProfilePicture = (profilePicture: File): Promise<string> =>
-	auth.currentUser
+export const updateProfilePicture = (profilePicture: File): Promise<string> => {
+	return auth.currentUser
 		? uploadBytes(
 				ref(storage, `${auth.currentUser.uid}/profile-picture`),
 				profilePicture
-			).then(snapshot => getDownloadURL(snapshot.ref))
+		).then(snapshot => getDownloadURL(snapshot.ref))
 		: Promise.reject()
+}
+
+export const getUserProfiles = async (
+	userIds: string[]
+): Promise<PublicProfile[]> => {
+	const res = await fetch(
+		'https://us-central1-cs4610-chat-app.cloudfunctions.net/app/getUserProfiles',
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ userIds }),
+		}
+	)
+	const data = await res.json()
+	console.log(data)
+	return data
+}

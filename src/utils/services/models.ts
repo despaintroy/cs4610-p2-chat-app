@@ -7,26 +7,29 @@ export interface User {
 }
 
 export interface PublicProfile {
-	userId: string
+	id: string
 	name?: string | null
 	profileImage?: string | null
 }
 
 export interface Message {
 	id: string
-	userId?: string
-	timestamp?: Date
-	content?: string
+	channelId: string
+	userId: string
+	timestamp: Date | null
+	content: string
 }
 export interface Channel {
 	id: string
-	name?: string
+	serverId: string
+	name: string
 	messages?: Message[]
 }
 
 export interface Server {
 	id: string
-	name?: string
+	name: string
 	channels?: Channel[]
+	users?: string[]
 	userProfiles?: PublicProfile[]
 }
