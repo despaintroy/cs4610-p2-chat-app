@@ -41,7 +41,10 @@ const AuthHome: FC<{ user: User | null | undefined }> = props => {
 
 	// Watch for changes to channels
 	useEffect(() => {
-		if (!servers?.length) return
+		if (!servers?.length) {
+			setChannels([])
+			return
+		}
 
 		watchChannels(
 			servers.map(s => s.id),
@@ -51,7 +54,10 @@ const AuthHome: FC<{ user: User | null | undefined }> = props => {
 
 	// Watch for changes to messages
 	useEffect(() => {
-		if (!channels?.length) return
+		if (!channels?.length) {
+			setMessages([])
+			return
+		}
 
 		watchMessages(
 			channels.map(c => c.id),
@@ -61,7 +67,10 @@ const AuthHome: FC<{ user: User | null | undefined }> = props => {
 
 	// Get users profiles
 	useEffect(() => {
-		if (!servers?.length) return
+		if (!servers?.length) {
+			setUserProfiles([])
+			return
+		}
 		const userIds = servers.flatMap(s => s?.users || [])
 		const uniqueUserIds = [...new Set(userIds)]
 		getUserProfiles(uniqueUserIds).then(profiles => setUserProfiles(profiles))

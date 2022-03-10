@@ -1,4 +1,13 @@
-import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import {
+	collection,
+	query,
+	where,
+	onSnapshot,
+	doc,
+	updateDoc,
+	arrayRemove,
+} from 'firebase/firestore'
+import { auth } from './auth'
 import { database } from './firebase'
 import { Server } from './models'
 
@@ -20,4 +29,12 @@ export const watchServers = (
 	})
 
 	return unsubscribe
+}
+
+export const leaveServer = (serverId: string): Promise<void> => {
+	const userId = auth.currentUser?.uid
+	if (!userId) return Promise.reject()
+
+	const serverRef = doc(database, 'servers', serverId)
+	return updateDoc(serverRef, { users: arrayRemove(userId) })
 }

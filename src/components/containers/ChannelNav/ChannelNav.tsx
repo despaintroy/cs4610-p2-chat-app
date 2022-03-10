@@ -1,5 +1,6 @@
 import {
-	IconButton,
+	ButtonBase,
+	Divider,
 	List,
 	ListItem,
 	ListItemButton,
@@ -13,11 +14,18 @@ import { Box } from '@mui/system'
 import React, { useContext, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
-import { AddCircle, Close, FiberManualRecord } from '@mui/icons-material'
+import {
+	AddCircle,
+	Close,
+	FiberManualRecord,
+	Logout,
+	Settings,
+} from '@mui/icons-material'
 import { Channel, Server } from 'utils/services/models'
 import { ServersContext } from 'AuthHome'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import NewChannelDialog from './newChannelDialog'
+import ConfirmLeaveDialog from './ConfirmLeaveDialog'
+import NewChannelDialog from './NewChannelDialog'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
@@ -34,6 +42,7 @@ const ChannelNav: React.FC = () => {
 	const [showMenu, setShowMenu] = React.useState(false)
 
 	const [showNewChannelDialog, setShowNewChannelDialog] = React.useState(false)
+	const [showLeaveDialog, setShowLeaveDialog] = React.useState(false)
 
 	useEffect(() => {
 		const foundServer = servers.find(server => server.id === serverId)
@@ -48,9 +57,11 @@ const ChannelNav: React.FC = () => {
 
 	return (
 		<Box sx={{ minWidth: '250px', backgroundColor: '#2F3136' }}>
-			<Box
+			<ButtonBase
+				onClick={(): void => setShowMenu(true)}
 				ref={menuAnchor}
 				sx={{
+					width: '100%',
 					borderBottom: 1,
 					borderColor: 'black',
 					px: 2,
@@ -61,10 +72,13 @@ const ChannelNav: React.FC = () => {
 				}}
 			>
 				<Typography variant='h6'>{server?.name}</Typography>
-				<IconButton size='small' onClick={(): void => setShowMenu(true)}>
-					{showMenu ? <Close /> : <KeyboardArrowDownIcon />}
-				</IconButton>
-			</Box>
+
+				{showMenu ? (
+					<Close fontSize='small' />
+				) : (
+					<KeyboardArrowDownIcon fontSize='small' />
+				)}
+			</ButtonBase>
 			<Popover
 				open={showMenu}
 				anchorEl={menuAnchor.current}
@@ -80,15 +94,32 @@ const ChannelNav: React.FC = () => {
 				}}
 				PaperProps={{ sx: { backgroundColor: 'black', mt: 1, p: 1 } }}
 			>
-				<List disablePadding sx={{ width: '220px' }}>
+				<List disablePadding sx={{ width: '220px', color: 'grey.400' }}>
 					<ListItem
 						button
 						dense
 						onClick={(): void => setShowNewChannelDialog(true)}
 					>
 						<ListItemText primary='Create Channel' />
+						<ListItemIcon sx={{ minWidth: 0, color: 'grey.400' }}>
+							<AddCircle fontSize='small' />
+						</ListItemIcon>
+					</ListItem>
+					<ListItem button dense>
+						<ListItemText primary='Server Settings' />
+						<ListItemIcon sx={{ minWidth: 0, color: 'grey.400' }}>
+							<Settings fontSize='small' />
+						</ListItemIcon>
+					</ListItem>
+					<Divider sx={{ my: 1 }} />
+					<ListItem button dense onClick={(): void => setShowLeaveDialog(true)}>
+						<ListItemText>
+							<Typography variant='body2' color='error'>
+								Leave Server
+							</Typography>
+						</ListItemText>
 						<ListItemIcon sx={{ minWidth: 0 }}>
-							<AddCircle />
+							<Logout fontSize='small' color='error' />
 						</ListItemIcon>
 					</ListItem>
 				</List>
@@ -97,6 +128,11 @@ const ChannelNav: React.FC = () => {
 				serverId={serverId}
 				open={showNewChannelDialog}
 				handleClose={(): void => setShowNewChannelDialog(false)}
+			/>
+			<ConfirmLeaveDialog
+				serverId={serverId}
+				open={showLeaveDialog}
+				handleClose={(): void => setShowLeaveDialog(false)}
 			/>
 			<List>
 				{channels?.map(channel => {

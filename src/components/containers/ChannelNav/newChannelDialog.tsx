@@ -54,7 +54,10 @@ const NewChannelDialog: React.FC<newChannelDialogProps> = props => {
 	})
 
 	const handleChange = (e: React.ChangeEvent<HTMLFormElement>): void => {
-		formik.setFieldValue(e.target.name, e.target.value.replace(/[\s-]+/g, '-'))
+		formik.setFieldValue(
+			e.target.name,
+			e.target.value.replace(/[\s-]+/g, '-').toLowerCase()
+		)
 	}
 
 	return (
