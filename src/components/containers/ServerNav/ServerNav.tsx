@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import { Box } from '@mui/system'
 import { ServersContext } from 'AuthHome'
+import NewServerDialog from 'components/common/NewServerDialog'
 import React, { useContext } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
@@ -18,8 +19,9 @@ const ServerNav: React.FC = () => {
 	const { serverId } = useParams<{ serverId: string }>()
 	const location = useLocation()
 	const navigate = useNavigate()
-
 	const servers = useContext(ServersContext) || []
+
+	const [showCreateServer, setShowCreateServer] = React.useState(false)
 
 	const isAccountPage = location.pathname === Paths.account
 
@@ -90,7 +92,7 @@ const ServerNav: React.FC = () => {
 					sx={{
 						cursor: 'pointer',
 					}}
-					onClick={(): void => alert('Not Implemented')}
+					onClick={(): void => setShowCreateServer(true)}
 				>
 					<Tooltip
 						title={<Typography p={'8px'}>Create Server</Typography>}
@@ -104,6 +106,11 @@ const ServerNav: React.FC = () => {
 					</Tooltip>
 				</ListItem>
 			</List>
+
+			<NewServerDialog
+				open={showCreateServer}
+				handleClose={(): void => setShowCreateServer(false)}
+			/>
 		</Box>
 	)
 }

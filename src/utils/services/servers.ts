@@ -6,6 +6,7 @@ import {
 	doc,
 	updateDoc,
 	arrayRemove,
+	addDoc,
 } from 'firebase/firestore'
 import { auth } from './auth'
 import { database } from './firebase'
@@ -37,4 +38,15 @@ export const leaveServer = (serverId: string): Promise<void> => {
 
 	const serverRef = doc(database, 'servers', serverId)
 	return updateDoc(serverRef, { users: arrayRemove(userId) })
+}
+
+export const createServer = (serverName: string): Promise<void> => {
+	if (!auth.currentUser) return Promise.reject()
+
+	return addDoc(collection(database, 'servers'), {
+		name: serverName,
+		users: [auth.currentUser.uid],
+	}).then(() => {
+		return
+	})
 }

@@ -1,4 +1,3 @@
-import { TagRounded } from '@mui/icons-material'
 import {
 	Button,
 	Dialog,
@@ -7,7 +6,6 @@ import {
 	DialogContentText,
 	DialogActions,
 	Box,
-	InputAdornment,
 } from '@mui/material'
 import {
 	FormErrorMessage,
@@ -16,35 +14,34 @@ import {
 } from 'components/common/FormComponents'
 import { useFormik } from 'formik'
 import React from 'react'
-import { createChannel } from 'utils/services/channels'
+import { createServer } from 'utils/services/servers'
 import * as yup from 'yup'
 
-interface newChannelDialogProps {
-	serverId: string
+interface newServerDialogProps {
 	open: boolean
 	handleClose: () => void
 }
 
 interface FormValues {
-	channelName: string
+	serverName: string
 }
 
-const NewChannelDialog: React.FC<newChannelDialogProps> = props => {
-	const { serverId, open, handleClose } = props
+const NewServerDialog: React.FC<newServerDialogProps> = props => {
+	const { open, handleClose } = props
 	const [formError, setFormError] = React.useState<string | null>()
 
 	const formik = useFormik({
 		initialValues: {
-			channelName: '',
+			serverName: '',
 		},
 		validationSchema: yup.object({
-			channelName: yup.string().required('Required'),
+			serverName: yup.string().required('Required'),
 		}),
 		onSubmit: async (values: FormValues, { resetForm }): Promise<void> => {
 			setFormError(null)
 			console.log('submit', values)
 			try {
-				await createChannel(serverId, values.channelName)
+				await createServer(values.serverName)
 				resetForm()
 				handleClose()
 			} catch (e) {
@@ -53,15 +50,19 @@ const NewChannelDialog: React.FC<newChannelDialogProps> = props => {
 		},
 	})
 
+	// Replace multiple spaces with single space
 	const handleChange = (e: React.ChangeEvent<HTMLFormElement>): void => {
-		formik.setFieldValue(
-			e.target.name,
-			e.target.value.replace(/[\s-]+/g, '-').toLowerCase()
-		)
+		formik.setFieldValue(e.target.name, e.target.value.replace(/[\s-]+/g, ' '))
 	}
 
 	return (
-		<Dialog open={open} onClose={handleClose}>
+		<Dialog
+			open={open}
+			onClose={(): void => {
+				formik.resetForm()
+				handleClose()
+			}}
+		>
 			<Box
 				component='form'
 				onSubmit={formik.handleSubmit}
@@ -69,28 +70,29 @@ const NewChannelDialog: React.FC<newChannelDialogProps> = props => {
 				noValidate
 				sx={{ width: '100%' }}
 			>
-				<DialogTitle>Create Channel</DialogTitle>
+				<DialogTitle>Create Server</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-						Creating a new channel will share it with everyone in the server
+						You can add all your friends and create multiple channels in seach
+						server!
 					</DialogContentText>
 					<FormikTextField
 						autoFocus
 						formik={formik}
-						fieldName='channelName'
-						label='Channel Name'
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position='start'>
-									<TagRounded />
-								</InputAdornment>
-							),
-						}}
+						fieldName='serverName'
+						label='Server Name'
 					/>
 					<FormErrorMessage message={formError} />
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
+					<Button
+						onClick={(): void => {
+							formik.resetForm()
+							handleClose()
+						}}
+					>
+						Cancel
+					</Button>
 					<SubmitButton
 						fullWidth={false}
 						isSubmitting={formik.isSubmitting}
@@ -102,4 +104,4 @@ const NewChannelDialog: React.FC<newChannelDialogProps> = props => {
 	)
 }
 
-export default NewChannelDialog
+export default NewServerDialog
