@@ -2,7 +2,7 @@ import React from 'react'
 
 import { FormikContextType } from 'formik'
 
-import { BaseTextFieldProps, TextField } from '@mui/material'
+import { BaseTextFieldProps, TextField, TextFieldProps } from '@mui/material'
 
 export interface FormikTextFieldProps<Values> extends BaseTextFieldProps {
 	formik: FormikContextType<Values>
@@ -17,7 +17,7 @@ FormikTextField.defaultProps = {
 }
 
 export default function FormikTextField<Values>(
-	props: FormikTextFieldProps<Values>
+	props: FormikTextFieldProps<Values> & TextFieldProps
 ): React.ReactElement {
 	const { formik, fieldName, ...rest } = props
 

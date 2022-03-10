@@ -1,4 +1,11 @@
-import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import {
+	collection,
+	query,
+	where,
+	onSnapshot,
+	addDoc,
+} from 'firebase/firestore'
+import { auth } from './auth'
 import { database } from './firebase'
 import { Channel } from './models'
 
@@ -27,4 +34,17 @@ export const watchChannels = (
 	})
 
 	return unsubscribe
+}
+
+export const createChannel = (
+	serverId: string,
+	name: string
+): Promise<void> => {
+	if (!auth.currentUser) return Promise.reject()
+
+	return addDoc(collection(database, 'channels'), { name, serverId }).then(
+		() => {
+			return
+		}
+	)
 }
