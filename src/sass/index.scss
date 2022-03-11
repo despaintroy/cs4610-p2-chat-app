@@ -46,3 +46,21 @@ a {
 		border-radius: 35%;
 	}
 }
+
+.avatar-file-input {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	width: 15rem;
+	color: white !important;
+	.drop-area {
+		height: unset;
+	}
+	.brainhub-drop-area__button {
+		color: white !important;
+	}
+	.brainhub-image-rotator__button--save,
+	.brainhub-crop-tool__button--save {
+		background-color: #48a7ee;
+		color: black;
+	}
+}

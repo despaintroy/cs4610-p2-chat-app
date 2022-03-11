@@ -20,6 +20,7 @@ export const formatUser = (user: FireUser | null): User | null => {
 				(user.metadata.lastSignInTime &&
 					new Date(user.metadata.lastSignInTime)) ||
 				undefined,
+			picture: user.photoURL,
 		}
 	else return null
 }
@@ -37,13 +38,19 @@ export const updatePassword = (password: string): Promise<void> =>
 		? updateFirePassword(auth.currentUser, password)
 		: Promise.reject()
 
-export const updateProfilePicture = (profilePicture: File): Promise<string> => {
-	return auth.currentUser
-		? uploadBytes(
-				ref(storage, `${auth.currentUser.uid}/profile-picture`),
-				profilePicture
-		).then(snapshot => getDownloadURL(snapshot.ref))
-		: Promise.reject()
+export const updateProfilePicture = async (
+	profilePicture: File
+): Promise<string> => {
+	const user = auth.currentUser
+	if (!user) return Promise.reject()
+
+	const snapshot = await uploadBytes(
+		ref(storage, `${user.uid}/${profilePicture.name}`),
+		profilePicture
+	)
+	const url = await getDownloadURL(snapshot.ref)
+	await updateProfile(user, { photoURL: url })
+	return url
 }
 
 export const getUserProfiles = async (
@@ -51,6 +58,7 @@ export const getUserProfiles = async (
 ): Promise<PublicProfile[]> => {
 	const res = await fetch(
 		'https://us-central1-cs4610-chat-app.cloudfunctions.net/app/getUserProfiles',
+		// 'http://localhost:5001/cs4610-chat-app/us-central1/app/getUserProfiles',
 		{
 			method: 'POST',
 			headers: {
@@ -60,6 +68,5 @@ export const getUserProfiles = async (
 		}
 	)
 	const data = await res.json()
-	console.log(data)
 	return data
 }

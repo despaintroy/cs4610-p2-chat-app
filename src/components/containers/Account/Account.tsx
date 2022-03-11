@@ -4,6 +4,7 @@ import React, { FC, useContext } from 'react'
 import { AuthContext } from 'Router'
 import PasswordForm from './PasswordForm'
 import ProfileForm from './ProfileForm'
+import ProfileImageForm from './ProfileImageForm'
 
 const Account: FC = () => {
 	const { signOut } = useContext(AuthContext)
@@ -25,7 +26,12 @@ const Account: FC = () => {
 				<Divider sx={{ my: 2 }} />
 				<Box sx={{ pt: 2 }}>
 					<Typography variant='h2'>Profile</Typography>
-					<ProfileForm />
+					<Box>
+						<ProfileImageForm />
+					</Box>
+					<Box>
+						<ProfileForm />
+					</Box>
 				</Box>
 				<Box sx={{ pt: 4 }}>
 					<Typography variant='h2'>Password</Typography>
