@@ -64,9 +64,7 @@ const ProfileImageForm: FC = (): React.ReactElement => {
 							height: 100,
 							mt: 3,
 						}}
-					>
-						{user.name?.charAt(0) ?? '?'}
-					</Avatar>
+					/>
 					<Button
 						variant='text'
 						onClick={(): void => setIsEditing(true)}
