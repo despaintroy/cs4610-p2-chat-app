@@ -36,15 +36,12 @@ export const watchChannels = (
 	return unsubscribe
 }
 
-export const createChannel = (
+export const createChannel = async (
 	serverId: string,
 	name: string
-): Promise<void> => {
+): Promise<string> => {
 	if (!auth.currentUser) return Promise.reject()
 
-	return addDoc(collection(database, 'channels'), { name, serverId }).then(
-		() => {
-			return
-		}
-	)
+	const ref = await addDoc(collection(database, 'channels'), { name, serverId })
+	return ref.id
 }

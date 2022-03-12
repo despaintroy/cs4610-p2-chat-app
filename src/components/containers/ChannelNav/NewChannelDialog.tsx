@@ -16,6 +16,8 @@ import {
 } from 'components/common/FormComponents'
 import { useFormik } from 'formik'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Paths } from 'utils/Paths'
 import { createChannel } from 'utils/services/channels'
 import * as yup from 'yup'
 
@@ -32,6 +34,7 @@ interface FormValues {
 const NewChannelDialog: React.FC<NewChannelDialogProps> = props => {
 	const { serverId, open, handleClose } = props
 	const [formError, setFormError] = React.useState<string | null>()
+	const navigate = useNavigate()
 
 	const formik = useFormik({
 		initialValues: {
@@ -44,9 +47,10 @@ const NewChannelDialog: React.FC<NewChannelDialogProps> = props => {
 			setFormError(null)
 			console.log('submit', values)
 			try {
-				await createChannel(serverId, values.channelName)
+				const newChannelId = await createChannel(serverId, values.channelName)
 				resetForm()
 				handleClose()
+				navigate(Paths.getChannelPath(serverId, newChannelId))
 			} catch (e) {
 				setFormError((e as Error).message)
 			}

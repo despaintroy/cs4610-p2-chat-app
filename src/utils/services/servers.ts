@@ -41,15 +41,14 @@ export const leaveServer = (serverId: string): Promise<void> => {
 	return updateDoc(serverRef, { users: arrayRemove(userId) })
 }
 
-export const createServer = (serverName: string): Promise<void> => {
+export const createServer = async (serverName: string): Promise<string> => {
 	if (!auth.currentUser) return Promise.reject()
 
-	return addDoc(collection(database, 'servers'), {
+	const ref = await addDoc(collection(database, 'servers'), {
 		name: serverName,
 		users: [auth.currentUser.uid],
-	}).then(() => {
-		return
 	})
+	return ref.id
 }
 
 export const deleteServer = (serverId: string): Promise<void> => {

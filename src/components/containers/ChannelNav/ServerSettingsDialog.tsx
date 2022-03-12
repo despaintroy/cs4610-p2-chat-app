@@ -8,19 +8,19 @@ import {
 	Box,
 	InputAdornment,
 } from '@mui/material'
-import { ServersContext } from 'AuthHome'
 import {
 	FormErrorMessage,
 	FormikTextField,
 	SubmitButton,
 } from 'components/common/FormComponents'
 import { useFormik } from 'formik'
-import React, { useContext } from 'react'
+import React from 'react'
+import { Server } from 'utils/services/models'
 import { updateServerName } from 'utils/services/servers'
 import * as yup from 'yup'
 
 interface ServerSettingsDialogProps {
-	serverId: string
+	server: Server
 	open: boolean
 	handleClose: () => void
 }
@@ -30,14 +30,8 @@ interface FormValues {
 }
 
 const ServerSettingsDialog: React.FC<ServerSettingsDialogProps> = props => {
-	const { serverId, open, handleClose } = props
+	const { server, open, handleClose } = props
 	const [formError, setFormError] = React.useState<string | null>(null)
-
-	const server = useContext(ServersContext)?.find(
-		server => server.id === serverId
-	)
-
-	if (!server) return null
 
 	const formik = useFormik({
 		initialValues: {
@@ -49,7 +43,7 @@ const ServerSettingsDialog: React.FC<ServerSettingsDialogProps> = props => {
 		onSubmit: async (values: FormValues): Promise<void> => {
 			setFormError(null)
 			try {
-				await updateServerName(serverId, values.serverName)
+				await updateServerName(server.id, values.serverName)
 				handleClose()
 			} catch (e) {
 				setFormError((e as Error).message)

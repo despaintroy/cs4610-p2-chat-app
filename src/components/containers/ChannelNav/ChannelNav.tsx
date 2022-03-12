@@ -17,6 +17,7 @@ import { Paths } from 'utils/Paths'
 import {
 	AddCircle,
 	Close,
+	Delete,
 	FiberManualRecord,
 	Logout,
 	Settings,
@@ -27,6 +28,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ConfirmLeaveDialog from './ConfirmLeaveDialog'
 import NewChannelDialog from './NewChannelDialog'
 import ServerSettingsDialog from './ServerSettingsDialog'
+import ConfirmDeleteDialog from './ConfirmDeleteDialog'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
@@ -45,15 +47,20 @@ const ChannelNav: React.FC = () => {
 	const [showNewChannelDialog, setShowNewChannelDialog] = React.useState(false)
 	const [showSettingsDialog, setShowSettingsDialog] = React.useState(false)
 	const [showLeaveDialog, setShowLeaveDialog] = React.useState(false)
+	const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
 
 	useEffect(() => {
 		const foundServer = servers.find(server => server.id === serverId)
 		const foundChannels = foundServer?.channels
 		setServer(foundServer)
 		setChannels(foundChannels)
+		if (!foundServer) {
+			setShowDeleteDialog(false)
+			setShowLeaveDialog(false)
+		}
 	}, [serverId, servers])
 
-	if (!serverId) {
+	if (!serverId || !server) {
 		return <></>
 	}
 
@@ -73,7 +80,7 @@ const ChannelNav: React.FC = () => {
 					alignItems: 'center',
 				}}
 			>
-				<Typography variant='h6'>{server?.name}</Typography>
+				<Typography variant='h6'>{server.name}</Typography>
 
 				{showMenu ? (
 					<Close fontSize='small' />
@@ -128,6 +135,20 @@ const ChannelNav: React.FC = () => {
 							<Logout fontSize='small' color='error' />
 						</ListItemIcon>
 					</ListItem>
+					<ListItem
+						button
+						dense
+						onClick={(): void => setShowDeleteDialog(true)}
+					>
+						<ListItemText>
+							<Typography variant='body2' color='error'>
+								Delete Server
+							</Typography>
+						</ListItemText>
+						<ListItemIcon sx={{ minWidth: 0 }}>
+							<Delete fontSize='small' color='error' />
+						</ListItemIcon>
+					</ListItem>
 				</List>
 			</Popover>
 			<NewChannelDialog
@@ -140,8 +161,13 @@ const ChannelNav: React.FC = () => {
 				open={showLeaveDialog}
 				handleClose={(): void => setShowLeaveDialog(false)}
 			/>
-			<ServerSettingsDialog
+			<ConfirmDeleteDialog
 				serverId={serverId}
+				open={showDeleteDialog}
+				handleClose={(): void => setShowDeleteDialog(false)}
+			/>
+			<ServerSettingsDialog
+				server={server}
 				open={showSettingsDialog}
 				handleClose={(): void => setShowSettingsDialog(false)}
 			/>
