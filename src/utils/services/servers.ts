@@ -7,6 +7,7 @@ import {
 	updateDoc,
 	arrayRemove,
 	addDoc,
+	deleteDoc,
 } from 'firebase/firestore'
 import { auth } from './auth'
 import { database } from './firebase'
@@ -49,4 +50,19 @@ export const createServer = (serverName: string): Promise<void> => {
 	}).then(() => {
 		return
 	})
+}
+
+export const deleteServer = (serverId: string): Promise<void> => {
+	return deleteDoc(doc(database, 'servers', serverId))
+}
+
+export const updateServerName = (
+	serverId: string,
+	name: string
+): Promise<void> => {
+	const userId = auth.currentUser?.uid
+	if (!userId) return Promise.reject()
+
+	const serverRef = doc(database, 'servers', serverId)
+	return updateDoc(serverRef, { name })
 }

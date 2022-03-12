@@ -26,6 +26,7 @@ import { ServersContext } from 'AuthHome'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ConfirmLeaveDialog from './ConfirmLeaveDialog'
 import NewChannelDialog from './NewChannelDialog'
+import ServerSettingsDialog from './ServerSettingsDialog'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
@@ -42,6 +43,7 @@ const ChannelNav: React.FC = () => {
 	const [showMenu, setShowMenu] = React.useState(false)
 
 	const [showNewChannelDialog, setShowNewChannelDialog] = React.useState(false)
+	const [showSettingsDialog, setShowSettingsDialog] = React.useState(false)
 	const [showLeaveDialog, setShowLeaveDialog] = React.useState(false)
 
 	useEffect(() => {
@@ -105,7 +107,11 @@ const ChannelNav: React.FC = () => {
 							<AddCircle fontSize='small' />
 						</ListItemIcon>
 					</ListItem>
-					<ListItem button dense>
+					<ListItem
+						button
+						dense
+						onClick={(): void => setShowSettingsDialog(true)}
+					>
 						<ListItemText primary='Server Settings' />
 						<ListItemIcon sx={{ minWidth: 0, color: 'grey.400' }}>
 							<Settings fontSize='small' />
@@ -133,6 +139,11 @@ const ChannelNav: React.FC = () => {
 				serverId={serverId}
 				open={showLeaveDialog}
 				handleClose={(): void => setShowLeaveDialog(false)}
+			/>
+			<ServerSettingsDialog
+				serverId={serverId}
+				open={showSettingsDialog}
+				handleClose={(): void => setShowSettingsDialog(false)}
 			/>
 			<List>
 				{channels?.map(channel => {
