@@ -32,7 +32,7 @@ const ChannelNav: React.FC = () => {
 	const [showMenu, setShowMenu] = React.useState(false)
 
 	const [showNewChannelDialog, setShowNewChannelDialog] = React.useState(false)
-	const [showSettingsDialog, setShowSettingsDialog] = React.useState(false)
+	const [showServerSettings, setShowServerSettings] = React.useState(false)
 	const [showLeaveDialog, setShowLeaveDialog] = React.useState(false)
 	const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
 
@@ -101,7 +101,7 @@ const ChannelNav: React.FC = () => {
 					<ListItem
 						button
 						dense
-						onClick={(): void => setShowSettingsDialog(true)}
+						onClick={(): void => setShowServerSettings(true)}
 					>
 						<ListItemText primary='Server Settings' />
 						<ListItemIcon sx={{ minWidth: 0, color: 'grey.400' }}>
@@ -152,8 +152,8 @@ const ChannelNav: React.FC = () => {
 			/>
 			<ServerSettingsDialog
 				server={server}
-				open={showSettingsDialog}
-				handleClose={(): void => setShowSettingsDialog(false)}
+				open={showServerSettings}
+				handleClose={(): void => setShowServerSettings(false)}
 			/>
 			<List>
 				{channels.length === 0 && <ListItem>No channels</ListItem>}

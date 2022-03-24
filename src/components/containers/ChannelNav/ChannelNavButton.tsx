@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
 import { Channel } from 'utils/services/models'
+import ChannelSettingsDialog from './ChannelSettingsDialog'
 
 export interface ChannelNavButtonProps {
 	channel: Channel
@@ -24,6 +25,7 @@ const ChannelNavButton: React.FC<ChannelNavButtonProps> = props => {
 
 	const [isSelected, setIsSelected] = useState(false)
 	const [isHover, setIsHover] = useState(false)
+	const [showChannelDialog, setShowChannelDialog] = useState(false)
 
 	useEffect(() => setIsSelected(channel.id === channelId), [channelId, channel])
 
@@ -60,20 +62,28 @@ const ChannelNavButton: React.FC<ChannelNavButtonProps> = props => {
 								{`# ${channel.name}`}
 							</Typography>
 							{/* <FiberManualRecord color='warning' sx={{ fontSize: 10 }} /> */}
-							{isHover && (
+							{(isHover || isSelected) && (
 								<Tooltip
 									title='Channel Settings'
 									placement='top'
 									arrow
 									disableInteractive
 								>
-									<Settings fontSize='small' />
+									<Settings
+										fontSize='small'
+										onClick={(): void => setShowChannelDialog(true)}
+									/>
 								</Tooltip>
 							)}
 						</Stack>
 					}
 				/>
 			</ListItemButton>
+			<ChannelSettingsDialog
+				channel={channel}
+				open={showChannelDialog}
+				handleClose={(): void => setShowChannelDialog(false)}
+			/>
 		</ListItem>
 	)
 }

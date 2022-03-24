@@ -4,6 +4,8 @@ import {
 	where,
 	onSnapshot,
 	addDoc,
+	doc,
+	updateDoc,
 } from 'firebase/firestore'
 import { auth } from './auth'
 import { database } from './firebase'
@@ -35,6 +37,17 @@ export const createChannel = async (
 
 	const ref = await addDoc(collection(database, 'channels'), { name, serverId })
 	return ref.id
+}
+
+export const updateChannelName = (
+	channelId: string,
+	name: string
+): Promise<void> => {
+	const userId = auth.currentUser?.uid
+	if (!userId) return Promise.reject()
+
+	const channelRef = doc(database, 'channels', channelId)
+	return updateDoc(channelRef, { name })
 }
 
 // export const deleteChannelByServerId = async (serverId: string): Promise<void> => {
