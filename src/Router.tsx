@@ -3,6 +3,7 @@ import Account from 'components/containers/Account'
 import ChannelDetail from 'components/containers/ChannelDetail'
 import CreateAccount from 'components/containers/CreateAccount'
 import Home from 'components/containers/Home'
+import Nearby from 'components/containers/Nearby'
 import ServerDetail from 'components/containers/ServerDetail'
 import SignIn from 'components/containers/SignIn'
 import React, { createContext } from 'react'
@@ -37,6 +38,7 @@ const Router: FC = () => {
 						<Route path={Paths.server} element={<ServerDetail />} />
 						<Route path={Paths.channel} element={<ChannelDetail />} />
 						<Route path={Paths.account} element={<Account />} />
+						<Route path={Paths.nearby} element={<Nearby />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>

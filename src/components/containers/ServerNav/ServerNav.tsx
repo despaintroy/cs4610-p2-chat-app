@@ -1,4 +1,4 @@
-import { Add, Person } from '@mui/icons-material'
+import { Add, LocationOn, Person } from '@mui/icons-material'
 import {
 	Avatar,
 	Badge,
@@ -35,6 +35,7 @@ const ServerNav: React.FC = () => {
 	}, [serverId, servers])
 
 	const isAccountPage = location.pathname === Paths.account
+	const isNearbyPage = location.pathname === Paths.nearby
 
 	return (
 		<Box className='server-nav' sx={{ backgroundColor: 'background.default' }}>
@@ -113,6 +114,30 @@ const ServerNav: React.FC = () => {
 					>
 						<Avatar>
 							<Add sx={{ color: 'white' }} />
+						</Avatar>
+					</Tooltip>
+				</ListItem>
+				<Divider sx={{ m: 1 }} />
+				<ListItem
+					sx={{
+						cursor: 'pointer',
+					}}
+				>
+					<Tooltip
+						title={<Typography p={'8px'}>Nearby</Typography>}
+						onClick={(): void => navigate(Paths.nearby)}
+						placement='right'
+						arrow
+						disableInteractive
+					>
+						<Avatar
+							variant={isNearbyPage ? 'rounded' : 'circular'}
+							sx={{
+								bgcolor: isNearbyPage ? 'primary.main' : 'grey',
+								color: 'white',
+							}}
+						>
+							<LocationOn sx={{ color: 'white' }} />
 						</Avatar>
 					</Tooltip>
 				</ListItem>
