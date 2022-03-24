@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useState } from 'react'
+import React, { FC, useContext, useState } from 'react'
 
 import { Box } from '@mui/system'
 import { AuthContext } from 'Router'

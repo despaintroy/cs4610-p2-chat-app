@@ -3,31 +3,23 @@ import {
 	Divider,
 	List,
 	ListItem,
-	ListItemButton,
 	ListItemIcon,
 	ListItemText,
 	Popover,
-	Stack,
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useContext, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
-import {
-	AddCircle,
-	Close,
-	Delete,
-	FiberManualRecord,
-	Logout,
-	Settings,
-} from '@mui/icons-material'
+import { AddCircle, Close, Delete, Logout, Settings } from '@mui/icons-material'
 import { ChannelsContext, ServerContext } from 'AuthHome'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ConfirmLeaveDialog from './ConfirmLeaveDialog'
 import NewChannelDialog from './NewChannelDialog'
 import ServerSettingsDialog from './ServerSettingsDialog'
 import ConfirmDeleteDialog from './ConfirmDeleteDialog'
+import ChannelNavButton from './ChannelNavButton'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
@@ -165,44 +157,9 @@ const ChannelNav: React.FC = () => {
 			/>
 			<List>
 				{channels.length === 0 && <ListItem>No channels</ListItem>}
-				{channels?.map(channel => {
-					const isSelected = channel.id === channelId
-					return (
-						<ListItem disablePadding dense key={channel.id}>
-							<ListItemButton
-								selected={isSelected}
-								onClick={(): void =>
-									navigate(Paths.getChannelPath(serverId, channel.id))
-								}
-								classes={{ selected: 'channel-nav-selected' }}
-								sx={{ mx: 1, my: '0.2rem' }}
-							>
-								<ListItemText
-									primary={
-										<Stack
-											direction='row'
-											alignItems='center'
-											justifyContent='space-between'
-										>
-											<Typography
-												fontWeight='bold'
-												color={isSelected ? 'white' : '#8f9296'}
-											>
-												{`# ${channel.name}`}
-											</Typography>
-											{channel.id === '2' && (
-												<FiberManualRecord
-													color='warning'
-													sx={{ fontSize: 10 }}
-												/>
-											)}
-										</Stack>
-									}
-								/>
-							</ListItemButton>
-						</ListItem>
-					)
-				})}
+				{channels?.map(channel => (
+					<ChannelNavButton key={channel.id} channel={channel} />
+				))}
 			</List>
 		</Box>
 	)

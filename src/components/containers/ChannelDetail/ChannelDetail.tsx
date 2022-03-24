@@ -4,7 +4,6 @@ import {
 	IconButton,
 	InputAdornment,
 	OutlinedInput,
-	Skeleton,
 	Stack,
 	Typography,
 } from '@mui/material'
