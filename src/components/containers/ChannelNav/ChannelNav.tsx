@@ -15,10 +15,10 @@ import { Paths } from 'utils/Paths'
 import { AddCircle, Close, Delete, Logout, Settings } from '@mui/icons-material'
 import { ChannelsContext, ServerContext } from 'AuthHome'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import ConfirmLeaveDialog from './ConfirmLeaveDialog'
+import ConfirmLeaveDialog from './ServerSettings/ConfirmLeaveDialog'
 import NewChannelDialog from './NewChannelDialog'
 import ServerSettingsDialog from './ServerSettingsDialog'
-import ConfirmDeleteDialog from './ConfirmDeleteDialog'
+import ConfirmDeleteDialog from './ServerSettings/ConfirmDeleteDialog'
 import ChannelNavButton from './ChannelNavButton'
 
 const ChannelNav: React.FC = () => {
@@ -157,9 +157,11 @@ const ChannelNav: React.FC = () => {
 			/>
 			<List>
 				{channels.length === 0 && <ListItem>No channels</ListItem>}
-				{channels?.map(channel => (
-					<ChannelNavButton key={channel.id} channel={channel} />
-				))}
+				{channels
+					?.sort((a, b) => (a.name < b.name ? -1 : 1))
+					.map(channel => (
+						<ChannelNavButton key={channel.id} channel={channel} />
+					))}
 			</List>
 		</Box>
 	)

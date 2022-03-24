@@ -6,6 +6,7 @@ import {
 	addDoc,
 	doc,
 	updateDoc,
+	deleteDoc,
 } from 'firebase/firestore'
 import { auth } from './auth'
 import { database } from './firebase'
@@ -48,6 +49,10 @@ export const updateChannelName = (
 
 	const channelRef = doc(database, 'channels', channelId)
 	return updateDoc(channelRef, { name })
+}
+
+export const deleteChannel = (channelId: string): Promise<void> => {
+	return deleteDoc(doc(database, 'channels', channelId))
 }
 
 // export const deleteChannelByServerId = async (serverId: string): Promise<void> => {

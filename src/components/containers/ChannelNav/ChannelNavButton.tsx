@@ -11,7 +11,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
 import { Channel } from 'utils/services/models'
-import ChannelSettingsDialog from './ChannelSettingsDialog'
+import ChannelSettingsDialog from './ChannelSettings/ChannelSettingsDialog'
 
 export interface ChannelNavButtonProps {
 	channel: Channel
