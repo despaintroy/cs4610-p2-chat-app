@@ -9,9 +9,9 @@ import {
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { ServersContext } from 'AuthHome'
+import { AllServersContext } from 'AuthHome'
 import NewServerDialog from 'components/common/NewServerDialog'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
 
@@ -19,9 +19,20 @@ const ServerNav: React.FC = () => {
 	const { serverId } = useParams<{ serverId: string }>()
 	const location = useLocation()
 	const navigate = useNavigate()
-	const servers = useContext(ServersContext) || []
+	const servers = useContext(AllServersContext) || []
 
 	const [showCreateServer, setShowCreateServer] = React.useState(false)
+
+	useEffect(() => {
+		if (!serverId) return
+		if (!servers.some(s => s.id === serverId)) {
+			navigate(
+				serverId && servers.length > 0
+					? Paths.getServerPath(servers[0].id)
+					: Paths.home
+			)
+		}
+	}, [serverId, servers])
 
 	const isAccountPage = location.pathname === Paths.account
 

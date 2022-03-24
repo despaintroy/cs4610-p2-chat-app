@@ -14,8 +14,6 @@ const ProfileImageForm: FC = (): React.ReactElement => {
 	const [errorMessage, setErrorMessage] = React.useState('')
 	const [isEditing, setIsEditing] = React.useState(false)
 
-	useEffect(() => console.log('user', user), [user])
-
 	if (!user) return <></>
 
 	const updateImage = async (file: File): Promise<void> => {

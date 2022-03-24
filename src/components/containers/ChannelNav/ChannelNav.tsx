@@ -22,8 +22,7 @@ import {
 	Logout,
 	Settings,
 } from '@mui/icons-material'
-import { Channel, Server } from 'utils/services/models'
-import { ServersContext } from 'AuthHome'
+import { ChannelsContext, ServerContext } from 'AuthHome'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ConfirmLeaveDialog from './ConfirmLeaveDialog'
 import NewChannelDialog from './NewChannelDialog'
@@ -34,12 +33,8 @@ const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =
 		useParams<{ serverId: string; channelId: string }>()
 	const navigate = useNavigate()
-	const servers = useContext(ServersContext) || []
-
-	const [server, setServer] = React.useState<Server | undefined>(undefined)
-	const [channels, setChannels] = React.useState<Channel[] | undefined>(
-		undefined
-	)
+	const server = useContext(ServerContext)
+	const channels = useContext(ChannelsContext) || []
 
 	const menuAnchor = React.useRef<HTMLButtonElement>(null)
 	const [showMenu, setShowMenu] = React.useState(false)
@@ -50,15 +45,12 @@ const ChannelNav: React.FC = () => {
 	const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
 
 	useEffect(() => {
-		const foundServer = servers.find(server => server.id === serverId)
-		const foundChannels = foundServer?.channels
-		setServer(foundServer)
-		setChannels(foundChannels)
-		if (!foundServer) {
-			setShowDeleteDialog(false)
-			setShowLeaveDialog(false)
-		}
-	}, [serverId, servers])
+		if (!serverId) return
+		if (!channels.some(channel => channel.id === channelId))
+			navigate(Paths.getServerPath(serverId))
+		if (channels.length > 0 && !channelId)
+			navigate(Paths.getChannelPath(serverId, channels[0].id))
+	}, [channels, channelId, serverId])
 
 	if (!serverId || !server) {
 		return <></>
@@ -172,6 +164,7 @@ const ChannelNav: React.FC = () => {
 				handleClose={(): void => setShowSettingsDialog(false)}
 			/>
 			<List>
+				{channels.length === 0 && <ListItem>No channels</ListItem>}
 				{channels?.map(channel => {
 					const isSelected = channel.id === channelId
 					return (

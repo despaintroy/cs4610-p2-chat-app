@@ -24,13 +24,11 @@ export interface Channel {
 	id: string
 	serverId: string
 	name: string
-	messages?: Message[]
 }
 
 export interface Server {
 	id: string
 	name: string
-	channels?: Channel[]
-	users?: string[]
-	userProfiles?: PublicProfile[]
+	update: number
+	users: string[]
 }

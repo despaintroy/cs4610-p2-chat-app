@@ -11,32 +11,26 @@ import { database } from './firebase'
 import { Message } from './models'
 
 export const watchMessages = (
-	channelIds: string[],
+	channelId: string,
 	setMessages: (messages: Message[]) => void
 ): (() => void) => {
-	if (channelIds.length === 0) {
-		setMessages([])
-		return (): void => {
-			return
-		}
-	}
-
-	const q = query(
-		collection(database, 'messages'),
-		where('channelId', 'in', channelIds)
-	)
-
-	const unsubscribe = onSnapshot(q, querySnapshot => {
-		const messages: Message[] = []
-		querySnapshot.forEach(doc => {
-			messages.push({
-				...(doc.data() as Omit<Message, 'id'>),
-				id: doc.id,
-				timestamp: doc.data().timestamp?.toDate() || null,
+	const unsubscribe = onSnapshot(
+		query(
+			collection(database, 'messages'),
+			where('channelId', '==', channelId)
+		),
+		querySnapshot => {
+			const messages: Message[] = []
+			querySnapshot.forEach(doc => {
+				messages.push({
+					...(doc.data() as Omit<Message, 'id'>),
+					id: doc.id,
+					timestamp: doc.data().timestamp?.toDate() || null,
+				})
 			})
-		})
-		setMessages(messages)
-	})
+			setMessages(messages)
+		}
+	)
 
 	return unsubscribe
 }

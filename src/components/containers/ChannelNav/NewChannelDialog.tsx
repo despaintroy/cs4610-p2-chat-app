@@ -45,7 +45,6 @@ const NewChannelDialog: React.FC<NewChannelDialogProps> = props => {
 		}),
 		onSubmit: async (values: FormValues, { resetForm }): Promise<void> => {
 			setFormError(null)
-			console.log('submit', values)
 			try {
 				const newChannelId = await createChannel(serverId, values.channelName)
 				resetForm()

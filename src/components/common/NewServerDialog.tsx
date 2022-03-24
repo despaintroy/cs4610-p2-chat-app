@@ -42,7 +42,6 @@ const NewServerDialog: React.FC<newServerDialogProps> = props => {
 		}),
 		onSubmit: async (values: FormValues, { resetForm }): Promise<void> => {
 			setFormError(null)
-			console.log('submit', values)
 			try {
 				const newServerId = await createServer(values.serverName)
 				resetForm()

@@ -4,6 +4,7 @@ import {
 	IconButton,
 	InputAdornment,
 	OutlinedInput,
+	Skeleton,
 	Stack,
 	Typography,
 } from '@mui/material'
@@ -17,36 +18,42 @@ import React, {
 	useState,
 } from 'react'
 import { useParams } from 'react-router-dom'
-import { ServersContext } from 'AuthHome'
+import { ChannelsContext, ServerContext } from 'AuthHome'
 import SendIcon from '@mui/icons-material/Send'
-import { Channel, Message, Server } from 'utils/services/models'
+import { Channel, Message, PublicProfile } from 'utils/services/models'
 import parse from 'html-react-parser'
-import { sendMessage } from 'utils/services/messages'
+import { sendMessage, watchMessages } from 'utils/services/messages'
+import { getUserProfiles } from 'utils/services/user'
 
 const ChannelDetail: FC = () => {
-	const { serverId, channelId } =
-		useParams<{ serverId: string; channelId: string }>()
-	const servers = useContext(ServersContext) || []
+	const { channelId } = useParams<{ serverId: string; channelId: string }>()
+	const server = useContext(ServerContext)
+	const channels = useContext(ChannelsContext) || []
 	const messagesEndRef = useRef<HTMLDivElement>(null)
 
 	const [messageDraft, setMessageDraft] = useState('')
 	const [messages, setMessages] = useState<Message[] | undefined>()
-	const [server, setServer] = useState<Server | undefined>()
-	const [channel, setChannel] = useState<Channel | undefined>()
+	const [selectedChannel, setSelectedChannel] = useState<Channel | undefined>()
+	const [userProfiles, setUserProfiles] = useState<PublicProfile[]>()
 
 	const scrollToBottom = (behavior: ScrollBehavior = 'auto'): void => {
 		messagesEndRef?.current?.scrollIntoView({ behavior })
 	}
 
 	useEffect(() => {
-		const foundServer = servers.find(server => server.id === serverId)
-		const foundChannel = foundServer?.channels?.find(
-			channel => channel.id === channelId
+		if (!channelId) return
+
+		watchMessages(channelId, setMessages)
+
+		setSelectedChannel(
+			channels.find(channel => channel.id === channelId) || undefined
 		)
-		setServer(foundServer)
-		setChannel(foundChannel)
-		foundChannel?.messages && setMessages(foundChannel.messages)
-	}, [channelId, servers])
+	}, [channelId])
+
+	useEffect(() => {
+		if (!server) return
+		getUserProfiles(server.users).then(setUserProfiles).catch(console.error)
+	}, [server])
 
 	useLayoutEffect(scrollToBottom, [messages])
 
@@ -63,55 +70,57 @@ const ChannelDetail: FC = () => {
 				sx={{ width: '100%', backgroundColor: '#37393e' }}
 			>
 				<Box sx={{ borderBottom: 1, borderColor: 'black', px: 2, py: 1 }}>
-					<Typography variant='h6'>{`# ${channel?.name}`}</Typography>
+					<Typography variant='h6'>{`# ${selectedChannel?.name}`}</Typography>
 				</Box>
 				<Box
 					className='messages-container'
 					sx={{ pb: 2, mt: 'auto', width: '100%', overflowY: 'scroll' }}
 				>
-					{messages
-						?.sort((a, b) => {
-							if (!a.timestamp) return 1
-							if (!b.timestamp) return -1
-							return Number(a.timestamp) - Number(b.timestamp)
-						})
-						.map((message, index) => {
-							const userProfile = server?.userProfiles?.find(
-								profile => profile.id === message.userId
-							)
+					{!userProfiles || !messages ? (
+						// TODO: Loading
+						<></>
+					) : (
+						messages
+							.sort((a, b) => {
+								if (!a.timestamp) return 1
+								if (!b.timestamp) return -1
+								return Number(a.timestamp) - Number(b.timestamp)
+							})
+							.map((message, index) => {
+								const userProfile = userProfiles?.find(
+									profile => profile.id === message.userId
+								)
 
-							return (
-								<Box key={index} className='message'>
-									<Stack direction='row'>
-										<Avatar
-											sx={{ mr: 2, mt: 1 }}
-											src={userProfile?.profileImage || undefined}
-										/>
-										<Box sx={{ width: '100%' }}>
-											<Stack direction='row'>
-												<Box className='user-name'>
-													{userProfile?.name || <i>Removed</i>}
+								return (
+									<Box key={index} className='message'>
+										<Stack direction='row'>
+											<Avatar
+												sx={{ mr: 2, mt: 1 }}
+												src={userProfile?.profileImage || undefined}
+											/>
+											<Box sx={{ width: '100%' }}>
+												<Stack direction='row'>
+													<Box className='user-name'>
+														{userProfile?.name || <i>Removed</i>}
+													</Box>
+													<Box className='time' sx={{ ml: 'auto' }}>
+														<Typography variant='caption' color='text.disabled'>
+															{message.timestamp?.toISOString().split('T')[0] ||
+																'-'}
+														</Typography>
+													</Box>
+												</Stack>
+												<Box className='content' color='#d9dadb'>
+													{parse(
+														message.content?.replace(/[\n\r]/g, '<br />') || ''
+													)}
 												</Box>
-												<Box className='time' sx={{ ml: 'auto' }}>
-													<Typography variant='caption' color='text.disabled'>
-														{(message.timestamp &&
-															new Date(message.timestamp)
-																.toISOString()
-																.split('T')[0]) ||
-															'-'}
-													</Typography>
-												</Box>
-											</Stack>
-											<Box className='content' color='#d9dadb'>
-												{parse(
-													message.content?.replace(/[\n\r]/g, '<br />') || ''
-												)}
 											</Box>
-										</Box>
-									</Stack>
-								</Box>
-							)
-						})}
+										</Stack>
+									</Box>
+								)
+							})
+					)}
 					<div ref={messagesEndRef} />
 				</Box>
 				<Box sx={{ px: 2, pb: 3, bgcolor: '#37393e' }}>
@@ -119,7 +128,7 @@ const ChannelDetail: FC = () => {
 						multiline
 						fullWidth
 						autoFocus
-						placeholder={`Message #${channel?.name}`}
+						placeholder={`Message #${selectedChannel?.name}`}
 						size='small'
 						autoComplete='off'
 						value={messageDraft}
@@ -166,7 +175,7 @@ const ChannelDetail: FC = () => {
 					<Typography variant='h6' color='text.disabled'>
 						Channel Members
 					</Typography>
-					{server?.userProfiles?.map(profile => (
+					{userProfiles?.map(profile => (
 						<Stack
 							key={profile.id}
 							direction='row'

@@ -1,21 +1,11 @@
 import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { ServersContext } from 'AuthHome'
-import React, { useContext, useEffect } from 'react'
+import { ServerContext } from 'AuthHome'
+import React, { useContext } from 'react'
 import { FC } from 'react'
-import { useParams } from 'react-router-dom'
-import { Server } from 'utils/services/models'
 
 const ServerDetail: FC = () => {
-	const servers = useContext(ServersContext) || []
-	const { serverId } = useParams<{ serverId: string }>()
-
-	const [server, setServer] = React.useState<Server>()
-
-	useEffect(() => {
-		const foundServer = servers.find(server => server.id === serverId)
-		setServer(foundServer)
-	}, [serverId])
+	const server = useContext(ServerContext)
 
 	return (
 		<Box sx={{ p: 2, backgroundColor: '#37393e', width: '100%' }}>

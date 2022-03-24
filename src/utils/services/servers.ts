@@ -10,6 +10,7 @@ import {
 	deleteDoc,
 } from 'firebase/firestore'
 import { auth } from './auth'
+import { createChannel } from './channels'
 import { database } from './firebase'
 import { Server } from './models'
 
@@ -47,7 +48,12 @@ export const createServer = async (serverName: string): Promise<string> => {
 	const ref = await addDoc(collection(database, 'servers'), {
 		name: serverName,
 		users: [auth.currentUser.uid],
+		update: 0,
 	})
+
+	// Add initial channel to server
+	createChannel(ref.id, 'general')
+
 	return ref.id
 }
 

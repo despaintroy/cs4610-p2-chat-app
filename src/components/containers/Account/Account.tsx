@@ -8,7 +8,6 @@ import ProfileImageForm from './ProfileImageForm'
 
 const Account: FC = () => {
 	const { signOut } = useContext(AuthContext)
-	console.log('Account')
 
 	return (
 		<Box sx={{ p: 2, pt: 4, backgroundColor: '#37393e', width: '100%' }}>
