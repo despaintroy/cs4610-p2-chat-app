@@ -15,7 +15,7 @@ import { watchServers } from 'utils/services/servers'
 
 const AuthLayout: FC<{ user: User | null | undefined }> = props => {
 	const { user } = props
-	const { serverId } = useParams<{ serverId: string }>()
+	const params = useParams<{ serverId: string }>()
 
 	const [servers, setServers] = React.useState<Server[] | null>()
 	const [channels, setChannels] = React.useState<Channel[] | null>()
@@ -28,27 +28,24 @@ const AuthLayout: FC<{ user: User | null | undefined }> = props => {
 
 	// Watch for changes to channels
 	useEffect(() => {
-		if (!serverId) {
+		if (!params.serverId) {
 			setChannels(null)
 			return
 		}
 
-		watchChannels(serverId, setChannels)
-	}, [serverId])
+		const unsubscribe = watchChannels(params.serverId, setChannels)
+		return unsubscribe
+	}, [params.serverId])
 
-	// TODO: Loading screen
-	if (user === undefined) return <></>
+	if (user === null) return <Navigate to={Paths.signin} />
 
-	if (user === null) {
-		return <Navigate to={Paths.signin} />
-	}
-
-	if (servers === undefined || channels === undefined) return <></>
+	if (servers === undefined || channels === undefined || user === undefined)
+		return <></>
 
 	return (
 		<AllServersContext.Provider value={servers}>
 			<ServerContext.Provider
-				value={servers?.find(server => server.id === serverId) || null}
+				value={servers?.find(s => s.id === params.serverId) || null}
 			>
 				<Box sx={{ display: 'flex', height: '100vh' }}>
 					<ServerNav />
