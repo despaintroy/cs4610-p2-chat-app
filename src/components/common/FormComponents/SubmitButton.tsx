@@ -1,20 +1,16 @@
 import { LoadingButton, LoadingButtonProps } from '@mui/lab'
-import React from 'react'
+import React, { FC } from 'react'
 
 export interface SubmitButtonProps extends LoadingButtonProps {
 	isSubmitting: boolean
 	buttonText: string
 }
 
-SubmitButton.defaultProps = {
-	buttonText: 'Submit',
-}
-
-export default function SubmitButton(
-	props: SubmitButtonProps
-): React.ReactElement {
-	const { isSubmitting, ...rest } = props
-
+const SubmitButton: FC<SubmitButtonProps> = ({
+	isSubmitting,
+	buttonText,
+	...rest
+}) => {
 	return (
 		<LoadingButton
 			{...rest}
@@ -24,7 +20,9 @@ export default function SubmitButton(
 			variant={rest.variant ?? 'contained'}
 			sx={{ ...rest.sx, mt: 2, mb: 1 }}
 		>
-			{props.buttonText ?? 'Submit'}
+			{buttonText ?? 'Submit'}
 		</LoadingButton>
 	)
 }
+
+export default SubmitButton

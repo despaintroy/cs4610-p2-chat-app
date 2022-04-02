@@ -1,18 +1,16 @@
 import { Alert } from '@mui/material'
-import React from 'react'
+import React, { FC } from 'react'
 
-export default function FormErrorMessage(props: {
+export interface FormErrorMessageProps {
 	message?: string | null
-}): React.ReactElement {
-	const { message } = props
-
-	if (message) {
-		return (
-			<Alert sx={{ mt: 2 }} severity='error'>
-				{message}
-			</Alert>
-		)
-	}
-
-	return <></>
 }
+
+const FormErrorMessage: FC<FormErrorMessageProps> = ({ message }) => {
+	return !message ? null : (
+		<Alert sx={{ mt: 2 }} severity='error'>
+			{message}
+		</Alert>
+	)
+}
+
+export default FormErrorMessage

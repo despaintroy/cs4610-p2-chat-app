@@ -13,8 +13,7 @@ import { watchChannels } from 'utils/services/channels'
 import { Channel, Server, User } from 'utils/services/models'
 import { watchServers } from 'utils/services/servers'
 
-const AuthLayout: FC<{ user: User | null | undefined }> = props => {
-	const { user } = props
+const AuthLayout: FC<{ user: User | null | undefined }> = ({ user }) => {
 	const params = useParams<{ serverId: string }>()
 
 	const [servers, setServers] = React.useState<Server[] | null>()
