@@ -3,16 +3,17 @@ import ChannelNav from 'components/containers/ChannelNav'
 import ServerNav from 'components/containers/ServerNav'
 import React, { FC, useEffect } from 'react'
 import { Navigate, Outlet, useParams } from 'react-router-dom'
+import {
+	AllServersContext,
+	ChannelsContext,
+	ServerContext,
+} from 'utils/context'
 import { Paths } from 'utils/Paths'
 import { watchChannels } from 'utils/services/channels'
 import { Channel, Server, User } from 'utils/services/models'
 import { watchServers } from 'utils/services/servers'
 
-export const AllServersContext = React.createContext<Server[] | null>(null)
-export const ServerContext = React.createContext<Server | null>(null)
-export const ChannelsContext = React.createContext<Channel[] | null>(null)
-
-const AuthHome: FC<{ user: User | null | undefined }> = props => {
+const AuthLayout: FC<{ user: User | null | undefined }> = props => {
 	const { user } = props
 	const { serverId } = useParams<{ serverId: string }>()
 
@@ -61,4 +62,4 @@ const AuthHome: FC<{ user: User | null | undefined }> = props => {
 	)
 }
 
-export default AuthHome
+export default AuthLayout

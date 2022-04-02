@@ -9,10 +9,10 @@ import {
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { AllServersContext } from 'AuthHome'
 import NewServerDialog from 'components/common/NewServerDialog'
 import React, { useContext, useEffect } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { AllServersContext } from 'utils/context'
 import { Paths } from 'utils/Paths'
 
 const ServerNav: React.FC = () => {

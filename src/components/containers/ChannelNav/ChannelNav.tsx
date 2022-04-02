@@ -11,9 +11,9 @@ import {
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { ChannelsContext, ServerContext } from 'AuthHome'
 import React, { useContext, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { ChannelsContext, ServerContext } from 'utils/context'
 import { Paths } from 'utils/Paths'
 import ChannelNavButton from './ChannelNavButton'
 import NewChannelDialog from './NewChannelDialog'

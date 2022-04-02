@@ -1,4 +1,4 @@
-import AuthHome from 'AuthHome'
+import AuthLayout from 'AuthLayout'
 import Account from 'components/containers/Account'
 import ChannelDetail from 'components/containers/ChannelDetail'
 import CreateAccount from 'components/containers/CreateAccount'
@@ -33,7 +33,7 @@ const Router: FC = () => {
 					<Route path={Paths.createAccount} element={<CreateAccount />} />
 
 					{/* PROTECTED ROUTES */}
-					<Route element={<AuthHome user={authContext.user} />}>
+					<Route element={<AuthLayout user={authContext.user} />}>
 						<Route path={Paths.home} element={<Home />} />
 						<Route path={Paths.server} element={<ServerDetail />} />
 						<Route path={Paths.channel} element={<ChannelDetail />} />
