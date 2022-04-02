@@ -5,8 +5,11 @@ import {
 	LinkProps as RouterLinkProps,
 } from 'react-router-dom'
 
-const RouterMuiLink: FC<MuiLinkProps & RouterLinkProps> = props => {
-	const { to, children, ...rest } = props
+const RouterMuiLink: FC<MuiLinkProps & RouterLinkProps> = ({
+	to,
+	children,
+	...rest
+}) => {
 	return (
 		<MuiLink component={RouterLink} to={to} {...rest}>
 			{children}

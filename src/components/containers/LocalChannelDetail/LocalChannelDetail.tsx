@@ -8,6 +8,7 @@ import { getLocalChannelById } from 'utils/services/localChannels'
 import { sendMessage, watchMessages } from 'utils/services/messages'
 import { LocalChannel, Message, PublicProfile } from 'utils/services/models'
 import { getUserProfiles } from 'utils/services/user'
+import ChannelMembers from '../ChannelDetail/ChannelMembers'
 
 const LocalChannelDetail: FC = () => {
 	const { localChannelId } = useParams<{ localChannelId: string }>()
@@ -46,15 +47,13 @@ const LocalChannelDetail: FC = () => {
 				<Box sx={{ borderBottom: 1, borderColor: 'black', px: 2, py: 1 }}>
 					<Typography variant='h6'>{`# ${localChannel.name}`}</Typography>
 				</Box>
-				<MessagesContainer
-					messages={messages || []}
-					userProfiles={userProfiles || []}
-				/>
+				<MessagesContainer messages={messages} userProfiles={userProfiles} />
 				<SendMessage
 					sendMessage={handleSend}
 					placeholder={`Message #${localChannel.name}`}
 				/>
 			</Stack>
+			<ChannelMembers userProfiles={userProfiles || []} />
 		</Stack>
 	)
 }

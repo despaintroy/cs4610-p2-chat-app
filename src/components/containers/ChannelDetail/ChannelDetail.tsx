@@ -49,8 +49,8 @@ const ChannelDetail: FC = () => {
 					<Typography variant='h6'>{`# ${selectedChannel?.name}`}</Typography>
 				</Box>
 				<MessagesContainer
-					messages={messages || []}
-					userProfiles={userProfiles || []}
+					messages={messages}
+					userProfiles={userProfiles}
 				/>
 				<SendMessage
 					sendMessage={handleSend}
