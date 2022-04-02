@@ -65,7 +65,11 @@ const SignInForm: FC = (): React.ReactElement => {
 			/>
 
 			<FormErrorMessage message={formError} />
-			<SubmitButton isSubmitting={formik.isSubmitting} buttonText='Sign In' />
+			<SubmitButton
+				isSubmitting={formik.isSubmitting}
+				buttonText='Sign In'
+				sx={{ mt: 2, mb: 1 }}
+			/>
 
 			<RouterMuiLink
 				to={Paths.createAccount}

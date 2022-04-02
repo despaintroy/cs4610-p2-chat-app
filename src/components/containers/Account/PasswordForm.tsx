@@ -77,6 +77,7 @@ const PasswordForm: FC = (): React.ReactElement => {
 				buttonText='Change Password'
 				disabled={!formik.values.password1 && !formik.values.password2}
 				fullWidth={false}
+				sx={{ mt: 2, mb: 1 }}
 			/>
 		</Box>
 	)

@@ -77,6 +77,7 @@ const ProfileForm: FC = (): React.ReactElement => {
 				buttonText='Save Changes'
 				disabled={!hasChanged}
 				fullWidth={false}
+				sx={{ mt: 2, mb: 1 }}
 			/>
 		</Box>
 	)

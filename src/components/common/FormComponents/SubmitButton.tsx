@@ -18,7 +18,7 @@ const SubmitButton: FC<SubmitButtonProps> = ({
 			type='submit'
 			fullWidth={rest.fullWidth ?? true}
 			variant={rest.variant ?? 'contained'}
-			sx={{ ...rest.sx, mt: 2, mb: 1 }}
+			sx={{ ...rest.sx }}
 		>
 			{buttonText ?? 'Submit'}
 		</LoadingButton>
