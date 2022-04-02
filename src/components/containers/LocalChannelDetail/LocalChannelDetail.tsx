@@ -7,6 +7,7 @@ import { sendMessage, watchMessages } from 'utils/services/messages'
 import MessagesContainer from 'components/common/MessagesContainer'
 import SendMessage from 'components/common/SendMessage'
 import { getLocalChannelById } from 'utils/services/localChannels'
+import { getUserProfiles } from 'utils/services/user'
 
 const LocalChannelDetail: FC = () => {
 	const { localChannelId } = useParams<{ localChannelId: string }>()
@@ -14,6 +15,13 @@ const LocalChannelDetail: FC = () => {
 	const [messages, setMessages] = useState<Message[] | undefined>()
 	const [localChannel, setLocalChannel] = useState<LocalChannel | undefined>()
 	const [userProfiles, setUserProfiles] = useState<PublicProfile[]>()
+
+	useEffect(() => {
+		if (!messages) return
+		const userIds = [...new Set(messages.map(message => message.userId))]
+
+		getUserProfiles(userIds).then(setUserProfiles)
+	}, [messages])
 
 	useEffect(() => {
 		if (!localChannelId) return
