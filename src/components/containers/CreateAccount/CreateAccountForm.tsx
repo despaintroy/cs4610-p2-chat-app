@@ -1,20 +1,16 @@
-import React, { useContext } from 'react'
-
-import { useFormik } from 'formik'
+import { Box } from '@mui/material'
 import {
 	FormErrorMessage,
 	FormikTextField,
 	SubmitButton,
 } from 'components/common/FormComponents'
-
-import { Box } from '@mui/material'
-import * as yup from 'yup'
-
-import { Paths } from 'utils/Paths'
-import { useNavigate } from 'react-router-dom'
-import { FC } from 'react'
-import { AuthContext } from 'Router'
 import RouterMuiLink from 'components/common/RouterMuiLink'
+import { useFormik } from 'formik'
+import React, { FC, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from 'Router'
+import { Paths } from 'utils/Paths'
+import * as yup from 'yup'
 
 interface FormValues {
 	name: string

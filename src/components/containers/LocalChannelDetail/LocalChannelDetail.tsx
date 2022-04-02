@@ -1,12 +1,12 @@
 import { Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { FC, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { LocalChannel, Message, PublicProfile } from 'utils/services/models'
-import { sendMessage, watchMessages } from 'utils/services/messages'
 import MessagesContainer from 'components/common/MessagesContainer'
 import SendMessage from 'components/common/SendMessage'
+import React, { FC, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { getLocalChannelById } from 'utils/services/localChannels'
+import { sendMessage, watchMessages } from 'utils/services/messages'
+import { LocalChannel, Message, PublicProfile } from 'utils/services/models'
 import { getUserProfiles } from 'utils/services/user'
 
 const LocalChannelDetail: FC = () => {

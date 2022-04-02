@@ -1,8 +1,8 @@
-import { Stack, Avatar, Typography } from '@mui/material'
+import { Avatar, Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import parse from 'html-react-parser'
 import React, { FC, useLayoutEffect, useRef } from 'react'
 import { Message, PublicProfile } from 'utils/services/models'
-import parse from 'html-react-parser'
 
 export interface MessagesContainerProps {
 	userProfiles: PublicProfile[]

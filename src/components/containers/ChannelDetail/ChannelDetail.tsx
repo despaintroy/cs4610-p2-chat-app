@@ -1,14 +1,14 @@
 import { Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { FC, useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
 import { ChannelsContext, ServerContext } from 'AuthHome'
-import { Channel, Message, PublicProfile } from 'utils/services/models'
-import { sendMessage, watchMessages } from 'utils/services/messages'
-import { getUserProfiles } from 'utils/services/user'
-import ChannelMembers from './ChannelMembers'
 import MessagesContainer from 'components/common/MessagesContainer'
 import SendMessage from 'components/common/SendMessage'
+import React, { FC, useContext, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { sendMessage, watchMessages } from 'utils/services/messages'
+import { Channel, Message, PublicProfile } from 'utils/services/models'
+import { getUserProfiles } from 'utils/services/user'
+import ChannelMembers from './ChannelMembers'
 
 const ChannelDetail: FC = () => {
 	const { channelId } = useParams<{ serverId: string; channelId: string }>()

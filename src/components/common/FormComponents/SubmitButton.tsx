@@ -1,6 +1,5 @@
-import React from 'react'
-
 import { LoadingButton, LoadingButtonProps } from '@mui/lab'
+import React from 'react'
 
 export interface SubmitButtonProps extends LoadingButtonProps {
 	isSubmitting: boolean

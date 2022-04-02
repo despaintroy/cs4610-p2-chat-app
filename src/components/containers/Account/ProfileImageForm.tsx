@@ -1,12 +1,11 @@
-import React, { FC, useContext, useState } from 'react'
-
-import { Box } from '@mui/system'
-import { AuthContext } from 'Router'
-import { FormErrorMessage } from 'components/common/FormComponents'
-import { updateProfilePicture } from 'utils/services/user'
 import FileInput from '@brainhubeu/react-file-input'
 import '@brainhubeu/react-file-input/dist/react-file-input.css'
 import { Avatar, Button, Stack, Typography } from '@mui/material'
+import { Box } from '@mui/system'
+import { FormErrorMessage } from 'components/common/FormComponents'
+import React, { FC, useContext, useState } from 'react'
+import { AuthContext } from 'Router'
+import { updateProfilePicture } from 'utils/services/user'
 
 const ProfileImageForm: FC = (): React.ReactElement => {
 	const { user, syncUser } = useContext(AuthContext)

@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react'
-import { User } from './models'
 import {
 	AuthError,
 	createUserWithEmailAndPassword,
@@ -8,8 +6,10 @@ import {
 	signOut as fireSignOut,
 	updateProfile,
 } from 'firebase/auth'
-import { firebaseApp } from './firebase'
+import { useEffect, useState } from 'react'
 import { getMessage } from './errors'
+import { firebaseApp } from './firebase'
+import { User } from './models'
 import { formatUser } from './user'
 
 export interface AuthContextType {

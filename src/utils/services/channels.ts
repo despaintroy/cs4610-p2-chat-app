@@ -1,12 +1,12 @@
 import {
-	collection,
-	query,
-	where,
-	onSnapshot,
 	addDoc,
-	doc,
-	updateDoc,
+	collection,
 	deleteDoc,
+	doc,
+	onSnapshot,
+	query,
+	updateDoc,
+	where,
 } from 'firebase/firestore'
 import { auth } from './auth'
 import { database } from './firebase'

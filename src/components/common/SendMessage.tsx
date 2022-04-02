@@ -1,13 +1,13 @@
+import SendIcon from '@mui/icons-material/Send'
 import {
-	OutlinedInput,
-	InputAdornment,
-	IconButton,
 	FormHelperText,
+	IconButton,
+	InputAdornment,
+	OutlinedInput,
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { FC, useState } from 'react'
-import SendIcon from '@mui/icons-material/Send'
 
 export interface SendMessageProps {
 	sendMessage: (message: string) => void

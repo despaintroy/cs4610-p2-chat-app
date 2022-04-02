@@ -1,19 +1,17 @@
-import React, { FC, useContext, useEffect } from 'react'
-
-import { useFormik } from 'formik'
-import * as yup from 'yup'
-
 import { Box } from '@mui/system'
-import { AuthContext } from 'Router'
 import {
 	FormErrorMessage,
 	FormikTextField,
 	SubmitButton,
 } from 'components/common/FormComponents'
-import { updateEmail, updateName } from 'utils/services/user'
-import { getMessage } from 'utils/services/errors'
-import { AuthError } from 'firebase/auth'
 import FormSuccessMessage from 'components/common/FormComponents/FormSuccessMessage'
+import { AuthError } from 'firebase/auth'
+import { useFormik } from 'formik'
+import React, { FC, useContext, useEffect } from 'react'
+import { AuthContext } from 'Router'
+import { getMessage } from 'utils/services/errors'
+import { updateEmail, updateName } from 'utils/services/user'
+import * as yup from 'yup'
 
 const ProfileForm: FC = (): React.ReactElement => {
 	const { user, syncUser } = useContext(AuthContext)

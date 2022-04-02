@@ -1,10 +1,10 @@
 import {
-	collection,
-	query,
-	where,
-	onSnapshot,
-	serverTimestamp,
 	addDoc,
+	collection,
+	onSnapshot,
+	query,
+	serverTimestamp,
+	where,
 } from 'firebase/firestore'
 import { auth } from './auth'
 import { database } from './firebase'

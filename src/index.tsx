@@ -1,8 +1,8 @@
 import { ThemeProvider } from '@emotion/react'
 import { CssBaseline } from '@mui/material'
-import Router from 'Router'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import Router from 'Router'
 import 'sass/index.scss'
 import theme from 'theme'
 

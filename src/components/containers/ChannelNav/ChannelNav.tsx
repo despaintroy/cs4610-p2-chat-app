@@ -1,3 +1,5 @@
+import { AddCircle, Close, Delete, Logout, Settings } from '@mui/icons-material'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import {
 	ButtonBase,
 	Divider,
@@ -9,17 +11,15 @@ import {
 	Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
+import { ChannelsContext, ServerContext } from 'AuthHome'
 import React, { useContext, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
-import { AddCircle, Close, Delete, Logout, Settings } from '@mui/icons-material'
-import { ChannelsContext, ServerContext } from 'AuthHome'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import ConfirmLeaveDialog from './ServerSettings/ConfirmLeaveDialog'
-import NewChannelDialog from './NewChannelDialog'
-import ServerSettingsDialog from './ServerSettingsDialog'
-import ConfirmDeleteDialog from './ServerSettings/ConfirmDeleteDialog'
 import ChannelNavButton from './ChannelNavButton'
+import NewChannelDialog from './NewChannelDialog'
+import ConfirmDeleteDialog from './ServerSettings/ConfirmDeleteDialog'
+import ConfirmLeaveDialog from './ServerSettings/ConfirmLeaveDialog'
+import ServerSettingsDialog from './ServerSettingsDialog'
 
 const ChannelNav: React.FC = () => {
 	const { serverId, channelId } =

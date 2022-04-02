@@ -1,4 +1,4 @@
-import { Typography, Stack, Avatar } from '@mui/material'
+import { Avatar, Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { FC } from 'react'
 import { PublicProfile } from 'utils/services/models'

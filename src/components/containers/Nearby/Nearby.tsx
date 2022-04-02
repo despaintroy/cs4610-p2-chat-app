@@ -12,13 +12,13 @@ import {
 	ListItemText,
 	Typography,
 } from '@mui/material'
+import { convertDistance, getDistance } from 'geolib'
 import React, { FC, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Paths } from 'utils/Paths'
 import { getLocalChannels } from 'utils/services/localChannels'
 import { LocalChannel } from 'utils/services/models'
-import { convertDistance, getDistance } from 'geolib'
 import NewLocalChannelDialog from './NewLocalChannelDialog'
-import { Paths } from 'utils/Paths'
-import { useNavigate } from 'react-router-dom'
 
 const Nearby: FC = () => {
 	const [localChannels, setLocalChannels] = useState<LocalChannel[]>()

@@ -1,13 +1,13 @@
 import {
-	collection,
-	query,
-	where,
-	onSnapshot,
-	doc,
-	updateDoc,
-	arrayRemove,
 	addDoc,
+	arrayRemove,
+	collection,
 	deleteDoc,
+	doc,
+	onSnapshot,
+	query,
+	updateDoc,
+	where,
 } from 'firebase/firestore'
 import { auth } from './auth'
 import { createChannel } from './channels'

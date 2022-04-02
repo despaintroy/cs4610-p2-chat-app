@@ -1,6 +1,5 @@
 import { Container, Paper, Typography } from '@mui/material'
-import React from 'react'
-import { FC } from 'react'
+import React, { FC } from 'react'
 import CreateAccountForm from './CreateAccountForm'
 
 const CreateAccount: FC = () => {

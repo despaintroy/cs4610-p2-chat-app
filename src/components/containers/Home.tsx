@@ -1,8 +1,7 @@
 import { Alert, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { AllServersContext } from 'AuthHome'
-import React, { useContext, useEffect } from 'react'
-import { FC } from 'react'
+import React, { FC, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Paths } from 'utils/Paths'
 

@@ -1,11 +1,11 @@
 import {
-	collection,
-	onSnapshot,
 	addDoc,
+	collection,
 	doc,
 	GeoPoint,
-	getDocs,
 	getDoc,
+	getDocs,
+	onSnapshot,
 } from 'firebase/firestore'
 import { auth } from './auth'
 import { database } from './firebase'

@@ -1,8 +1,7 @@
 import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { ServerContext } from 'AuthHome'
-import React, { useContext } from 'react'
-import { FC } from 'react'
+import React, { FC, useContext } from 'react'
 
 const ServerDetail: FC = () => {
 	const server = useContext(ServerContext)
