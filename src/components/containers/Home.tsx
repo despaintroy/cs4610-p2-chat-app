@@ -24,6 +24,9 @@ const Home: FC = () => {
 					It looks like you might not have any servers! Use the + icon on the
 					sidebar to get started.
 				</Typography>
+				<Typography variant='body1' sx={{ mt: 1 }}>
+					To join a nearby location-based chat, click the <i>pin</i> icon.
+				</Typography>
 			</Alert>
 		</Box>
 	)
