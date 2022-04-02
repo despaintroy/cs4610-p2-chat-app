@@ -35,7 +35,7 @@ const ServerNav: React.FC = () => {
 	}, [serverId, servers])
 
 	const isAccountPage = location.pathname === Paths.account
-	const isNearbyPage = location.pathname === Paths.nearby
+	const isNearbyPage = location.pathname.includes(Paths.nearby)
 
 	return (
 		<Box className='server-nav' sx={{ backgroundColor: 'background.default' }}>

@@ -25,6 +25,14 @@ export interface Channel {
 	serverId: string
 	name: string
 }
+export interface LocalChannel {
+	id: string
+	name: string
+	location: {
+		lat: number
+		lon: number
+	}
+}
 
 export interface Server {
 	id: string
