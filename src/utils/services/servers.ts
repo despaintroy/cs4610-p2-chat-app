@@ -4,6 +4,7 @@ import {
 	collection,
 	deleteDoc,
 	doc,
+	getDoc,
 	onSnapshot,
 	query,
 	updateDoc,
@@ -70,4 +71,15 @@ export const updateServerName = (
 
 	const serverRef = doc(database, 'servers', serverId)
 	return updateDoc(serverRef, { name })
+}
+
+export const getServerById = async (id: string): Promise<Server> => {
+	const docRef = doc(database, 'servers', id)
+	const docSnap = await getDoc(docRef)
+
+	if (docSnap.exists()) {
+		return { ...(docSnap.data() as Omit<Server, 'id'>), id: docSnap.id }
+	} else {
+		return Promise.reject()
+	}
 }

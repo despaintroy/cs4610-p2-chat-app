@@ -5,13 +5,14 @@ import SendMessage from 'components/common/SendMessage'
 import React, { FC, useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ChannelsContext, ServerContext } from 'utils/context'
+import { Paths } from 'utils/Paths'
 import { sendMessage, watchMessages } from 'utils/services/messages'
 import { Channel, Message, PublicProfile } from 'utils/services/models'
 import { getUserProfiles } from 'utils/services/user'
 import ChannelMembers from './ChannelMembers'
 
 const ChannelDetail: FC = () => {
-	const { channelId } = useParams<{ serverId: string; channelId: string }>()
+	const params = useParams<{ serverId: string; channelId: string }>()
 	const server = useContext(ServerContext)
 	const channels = useContext(ChannelsContext) || []
 
@@ -20,14 +21,14 @@ const ChannelDetail: FC = () => {
 	const [userProfiles, setUserProfiles] = useState<PublicProfile[]>()
 
 	useEffect(() => {
-		if (!channelId) return
+		if (!params.channelId) return
 
-		watchMessages(channelId, setMessages)
+		watchMessages(params.channelId, setMessages)
 
 		setSelectedChannel(
-			channels.find(channel => channel.id === channelId) || undefined
+			channels.find(channel => channel.id === params.channelId) || undefined
 		)
-	}, [channelId])
+	}, [params.channelId])
 
 	useEffect(() => {
 		if (!server) return
@@ -35,8 +36,8 @@ const ChannelDetail: FC = () => {
 	}, [server])
 
 	const handleSend = (message: string): void => {
-		if (!channelId) return
-		sendMessage(channelId, message)
+		if (!params.channelId) return
+		sendMessage(params.channelId, message)
 	}
 
 	return (
@@ -48,16 +49,20 @@ const ChannelDetail: FC = () => {
 				<Box sx={{ borderBottom: 1, borderColor: 'black', px: 2, py: 1 }}>
 					<Typography variant='h6'>{`# ${selectedChannel?.name}`}</Typography>
 				</Box>
-				<MessagesContainer
-					messages={messages}
-					userProfiles={userProfiles}
-				/>
+				<MessagesContainer messages={messages} userProfiles={userProfiles} />
 				<SendMessage
 					sendMessage={handleSend}
 					placeholder={`Message #${selectedChannel?.name}`}
 				/>
 			</Stack>
-			<ChannelMembers userProfiles={userProfiles || []} />
+			<ChannelMembers userProfiles={userProfiles || []}>
+				{params.serverId && (
+					<>
+						<Typography>Server invite:</Typography>
+						<Typography>{Paths.getJoinServerPath(params.serverId)}</Typography>
+					</>
+				)}
+			</ChannelMembers>
 		</Stack>
 	)
 }

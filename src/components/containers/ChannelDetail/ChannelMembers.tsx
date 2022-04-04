@@ -5,6 +5,7 @@ import { PublicProfile } from 'utils/services/models'
 
 const ChannelMembers: FC<{ userProfiles: PublicProfile[] }> = ({
 	userProfiles,
+	children,
 }) => {
 	return (
 		<Box sx={{ minWidth: '250px', bgcolor: '#2f3136' }}>
@@ -39,6 +40,9 @@ const ChannelMembers: FC<{ userProfiles: PublicProfile[] }> = ({
 						</Box>
 					</Stack>
 				))}
+			</Box>
+			<Box sx={{ px: 3, py: 1 }}>
+				{children}
 			</Box>
 		</Box>
 	)

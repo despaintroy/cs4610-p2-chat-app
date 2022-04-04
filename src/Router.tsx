@@ -6,6 +6,7 @@ import Home from 'components/containers/Home'
 import LocalChannelDetail from 'components/containers/LocalChannelDetail'
 import Nearby from 'components/containers/Nearby'
 import ServerDetail from 'components/containers/ServerDetail'
+import ServerInvite from 'components/containers/ServerInvite'
 import SignIn from 'components/containers/SignIn'
 import React, { createContext, FC } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -40,6 +41,7 @@ const Router: FC = () => {
 						<Route path={Paths.localChannel} element={<LocalChannelDetail />} />
 						<Route path={Paths.account} element={<Account />} />
 						<Route path={Paths.nearby} element={<Nearby />} />
+						<Route path={Paths.joinServer} element={<ServerInvite />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>

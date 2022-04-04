@@ -9,6 +9,8 @@ export const Paths = {
 	getLocalChannelPath: (localChannelId: string): string =>
 		`/nearby/${localChannelId}`,
 	nearby: '/nearby',
+	joinServer: '/join/:joinServerId/',
+	getJoinServerPath: (serverId: string): string => `/join/${serverId}`,
 	account: '/account',
 	signin: '/signin',
 	createAccount: '/create-account',
