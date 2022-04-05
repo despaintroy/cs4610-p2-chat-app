@@ -2,48 +2,41 @@ import { Button, Input, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
 import {
+	disconnectCall,
 	joinCall,
 	startCall,
+	VideoCall,
 	watchIncomingCalls,
 } from 'utils/helpers/videoCall'
 import { auth } from 'utils/services/auth'
 
 const WebRtcTest: React.FC = () => {
-	const [callId, setCallId] = React.useState('')
 	const [otherUserId, setOtherUserId] = React.useState('')
 
 	const localVideoEl = React.useRef<HTMLVideoElement>(null)
 	const remoteVideoEl = React.useRef<HTMLVideoElement>(null)
 
-	const [localStream, setLocalStream] = useState<MediaStream | null>(null)
-	const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+	const [videoCall, setVideoCall] = useState<VideoCall>()
+
+	const onDisconnect = (): void => console.log('onDisconnect')
 
 	useEffect(() => {
-		if (auth.currentUser) {
-			watchIncomingCalls(auth.currentUser.uid, (callId: string) => {
-				console.log('RECEIVED INCOMING CALL', callId)
-				const willJoin = confirm('Incoming call from ' + callId)
-				if (willJoin) {
-					joinCall(callId).then(r => {
-						setLocalStream(r.localStream)
-						setRemoteStream(r.remoteStream)
-					})
-				}
-			})
-		}
-	}, [])
+		if (!auth.currentUser) return
 
-	useEffect(() => {
-		if (localStream && localVideoEl.current) {
-			localVideoEl.current.srcObject = localStream
-		}
-	}, [localStream, localVideoEl.current])
+		watchIncomingCalls(auth.currentUser.uid, (callId: string) => {
+			console.log('RECEIVED INCOMING CALL', callId)
+			const willJoin = confirm('Incoming call from ' + callId)
+			if (willJoin) joinCall(callId, onDisconnect).then(setVideoCall)
+		})
+	}, [auth.currentUser])
 
+	// When call is created, attach video streams to the video elements
 	useEffect(() => {
-		if (remoteStream && remoteVideoEl.current) {
-			remoteVideoEl.current.srcObject = remoteStream
-		}
-	}, [remoteStream, remoteVideoEl.current])
+		if (!videoCall || !localVideoEl.current || !remoteVideoEl.current) return
+
+		localVideoEl.current.srcObject = videoCall.localStream
+		remoteVideoEl.current.srcObject = videoCall.remoteStream
+	}, [videoCall, localVideoEl, remoteVideoEl])
 
 	return (
 		<Box sx={{ py: 4 }}>
@@ -62,39 +55,18 @@ const WebRtcTest: React.FC = () => {
 					variant='contained'
 					disabled={!otherUserId}
 					onClick={(): void => {
-						startCall(otherUserId).then(r => {
-							setLocalStream(r.localStream)
-							setRemoteStream(r.remoteStream)
-							console.log('CALL ID:', r.callId)
-						})
+						startCall(otherUserId, onDisconnect).then(setVideoCall)
 					}}
 				>
 					Request Call
 				</Button>
-				<Input
-					placeholder='Room ID'
-					onChange={(value): void => setCallId(value.target.value)}
-				/>
 				<Button
+					disabled={!videoCall}
 					variant='contained'
-					disabled={!callId}
-					onClick={(): void => {
-						joinCall(callId).then(r => {
-							setLocalStream(r.localStream)
-							setRemoteStream(r.remoteStream)
-						})
-					}}
-				>
-					Join Call
-				</Button>
-				{/* <Button
-					variant='contained'
-					onClick={(): void => {
-						hangUp()
-					}}
+					onClick={(): void => videoCall && disconnectCall(videoCall)}
 				>
 					End Call
-				</Button> */}
+				</Button>
 
 				<div id='videos'>
 					<video

@@ -6,7 +6,7 @@ import {
 	onSnapshot,
 	updateDoc,
 } from 'firebase/firestore'
-import { Call } from 'utils/helpers/videoCall'
+import { CallDatabaseDocument } from 'utils/helpers/videoCall'
 import { database } from './firebase'
 
 export interface Offer {
@@ -32,7 +32,7 @@ export const startConnectRTC = async (
 	callId: string,
 	localStream: MediaStream,
 	remoteStream: MediaStream
-): Promise<string> => {
+): Promise<RTCPeerConnection> => {
 	// Add tracks from the local MediaStrem to the RTCPeerConnection
 	const peerConnection = new RTCPeerConnection(RTC_CONFIG)
 	localStream
@@ -79,7 +79,7 @@ export const startConnectRTC = async (
 
 	// Listening for remote session description below
 	onSnapshot(doc(database, 'calls', callId), async docSnap => {
-		const data = docSnap.data() as Call
+		const data = docSnap.data() as CallDatabaseDocument
 		if (!peerConnection.currentRemoteDescription && data && data.answer) {
 			const rtcSessionDescription = new RTCSessionDescription(data.answer)
 			await peerConnection.setRemoteDescription(rtcSessionDescription)
@@ -99,14 +99,14 @@ export const startConnectRTC = async (
 		}
 	)
 
-	return callId
+	return peerConnection
 }
 
 export const acceptConnectRTC = async (
 	callId: string,
 	localStream: MediaStream,
 	remoteStream: MediaStream
-): Promise<void> => {
+): Promise<RTCPeerConnection> => {
 	// Add tracks from the local MediaStrem to the RTCPeerConnection
 	const peerConnection = new RTCPeerConnection(RTC_CONFIG)
 	localStream.getTracks().forEach(track => {
@@ -122,19 +122,15 @@ export const acceptConnectRTC = async (
 
 	peerConnection.addEventListener('icecandidate', event => {
 		if (!event.candidate) {
-			console.log('Got final candidate!')
+			console.log('Agreed on final candidate')
 			return
 		}
-		console.log('Got candidate: ', event.candidate)
+		console.log('Got candidate')
 		addDoc(calleeCandidatesCollection, event.candidate.toJSON())
 	})
 
 	peerConnection.addEventListener('track', event => {
-		console.log('Got remote track:', event.streams[0])
-		event.streams[0].getTracks().forEach(track => {
-			console.log('Add a track to the remoteStream:', track)
-			remoteStream.addTrack(track)
-		})
+		event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track))
 	})
 
 	let offer: Offer
@@ -182,4 +178,6 @@ export const acceptConnectRTC = async (
 				}
 			})
 	)
+
+	return peerConnection
 }
