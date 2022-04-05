@@ -6,6 +6,7 @@ import {
 	onSnapshot,
 	updateDoc,
 } from 'firebase/firestore'
+import { requestDeviceAV } from 'utils/helpers/videoCall'
 import { auth } from './auth'
 import { database } from './firebase'
 
@@ -14,8 +15,14 @@ interface Offer {
 	sdp: string
 }
 
+interface Answer {
+	type: RTCSdpType
+	sdp: string
+}
+
 interface Call {
 	offer?: Offer
+	answer?: Answer
 }
 
 const RTC_CONFIG: RTCConfiguration = {
@@ -221,10 +228,7 @@ export async function openUserMedia(
 	localVideoEl: HTMLVideoElement,
 	remoteVideoEl: HTMLVideoElement
 ): Promise<void> {
-	const stream = await navigator.mediaDevices.getUserMedia({
-		video: true,
-		audio: true,
-	})
+	const stream = await requestDeviceAV()
 
 	localStream = stream
 
@@ -235,4 +239,16 @@ export async function openUserMedia(
 	localVideo.srcObject = stream
 	remoteStream = new MediaStream()
 	remoteVideo.srcObject = remoteStream
+}
+
+export async function hangUp(): Promise<void> {
+	localStream.getTracks().forEach(track => track.stop())
+
+	if (remoteStream) {
+		remoteStream.getTracks().forEach(track => track.stop())
+	}
+
+	if (peerConnection) {
+		peerConnection.close()
+	}
 }

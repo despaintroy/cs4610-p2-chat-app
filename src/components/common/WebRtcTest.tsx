@@ -1,13 +1,28 @@
 import { Button, Input, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
-import { createCall, joinCall, openUserMedia } from 'utils/services/webRTC'
+import React, { useEffect, useState } from 'react'
+import { joinCall, startCall } from 'utils/helpers/videoCall'
 
 const WebRtcTest: React.FC = () => {
 	const [callId, setCallId] = React.useState('')
 
-	const localVideo = React.useRef<HTMLVideoElement>(null)
-	const remoteVideo = React.useRef<HTMLVideoElement>(null)
+	const localVideoEl = React.useRef<HTMLVideoElement>(null)
+	const remoteVideoEl = React.useRef<HTMLVideoElement>(null)
+
+	const [localStream, setLocalStream] = useState<MediaStream | null>(null)
+	const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+
+	useEffect(() => {
+		if (localStream && localVideoEl.current) {
+			localVideoEl.current.srcObject = localStream
+		}
+	}, [localStream, localVideoEl.current])
+
+	useEffect(() => {
+		if (remoteStream && remoteVideoEl.current) {
+			remoteVideoEl.current.srcObject = remoteStream
+		}
+	}, [remoteStream, remoteVideoEl.current])
 
 	return (
 		<Box sx={{ py: 4 }}>
@@ -18,20 +33,14 @@ const WebRtcTest: React.FC = () => {
 				<Button
 					variant='contained'
 					onClick={(): void => {
-						localVideo.current &&
-							remoteVideo.current &&
-							openUserMedia(localVideo.current, remoteVideo.current)
+						startCall().then(r => {
+							setLocalStream(r.localStream)
+							setRemoteStream(r.remoteStream)
+							console.log('CALL ID:', r.callId)
+						})
 					}}
 				>
-					Setup Camera / Mic
-				</Button>
-				<Button
-					variant='contained'
-					onClick={(): void => {
-						createCall()
-					}}
-				>
-					Test Create Connection
+					Request Call
 				</Button>
 				<Input
 					placeholder='Room ID'
@@ -40,15 +49,32 @@ const WebRtcTest: React.FC = () => {
 				<Button
 					variant='contained'
 					onClick={(): void => {
-						joinCall(callId)
+						joinCall(callId).then(r => {
+							setLocalStream(r.localStream)
+							setRemoteStream(r.remoteStream)
+						})
 					}}
 				>
-					Test Join Connection
+					Join Call
 				</Button>
+				{/* <Button
+					variant='contained'
+					onClick={(): void => {
+						hangUp()
+					}}
+				>
+					End Call
+				</Button> */}
 
 				<div id='videos'>
-					<video ref={localVideo} id='localVideo' muted autoPlay playsInline />
-					<video ref={remoteVideo} id='remoteVideo' autoPlay playsInline />
+					<video
+						ref={localVideoEl}
+						id='localVideo'
+						muted
+						autoPlay
+						playsInline
+					/>
+					<video ref={remoteVideoEl} id='remoteVideo' autoPlay playsInline />
 				</div>
 			</Box>
 		</Box>
