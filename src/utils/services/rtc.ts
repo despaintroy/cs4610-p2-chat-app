@@ -45,7 +45,10 @@ export const startConnectRTC = async (
 		if (!event.candidate) return
 
 		// Record potential candidate
-		addDoc(collection(database, 'callerCandidates'), event.candidate.toJSON())
+		addDoc(
+			collection(database, 'calls', callId, 'callerCandidates'),
+			event.candidate.toJSON()
+		)
 	})
 
 	let sessionDescription: RTCSessionDescriptionInit

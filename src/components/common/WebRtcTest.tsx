@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react'
 import {
 	disconnectCall,
 	joinCall,
+	listenForIncomingCalls,
 	startCall,
 	VideoCall,
-	watchIncomingCalls,
 } from 'utils/helpers/videoCall'
 import { auth } from 'utils/services/auth'
 
@@ -23,7 +23,7 @@ const WebRtcTest: React.FC = () => {
 	useEffect(() => {
 		if (!auth.currentUser) return
 
-		watchIncomingCalls(auth.currentUser.uid, (callId: string) => {
+		listenForIncomingCalls(auth.currentUser.uid, (callId: string) => {
 			console.log('RECEIVED INCOMING CALL', callId)
 			const willJoin = confirm('Incoming call from ' + callId)
 			if (willJoin) joinCall(callId, onDisconnect).then(setVideoCall)

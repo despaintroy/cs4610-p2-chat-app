@@ -35,27 +35,27 @@ export interface CallDatabaseDocument {
 }
 
 export const requestDeviceAV = async (): Promise<MediaStream> =>
-	navigator.mediaDevices.getUserMedia({
-		video: true,
-		audio: true,
-	})
+	navigator.mediaDevices
+		.getUserMedia({
+			video: true,
+			audio: true,
+		})
+		.catch(() => {
+			console.error('Failed to get streams from camera and microphone')
+			return Promise.reject()
+		})
 
 export const startCall = async (
 	recipientId: string,
 	onDisconnect: () => void
 ): Promise<VideoCall> => {
-	let localStream: MediaStream
 	const remoteStream = new MediaStream()
 	let callId: string
-	let peerConnection: RTCPeerConnection
 
-	// Try to access device camera and microphone
-	try {
-		localStream = await requestDeviceAV()
-	} catch {
-		console.error('Unable to access device camera and microphone')
+	// Acess device camera and microphone
+	const localStream = await requestDeviceAV().catch(() => {
 		return Promise.reject()
-	}
+	})
 
 	// Try to add the call doc to the Firestore database
 	try {
@@ -72,21 +72,23 @@ export const startCall = async (
 		return Promise.reject()
 	}
 
-	// Try to start the WebRTC connection
-	try {
-		peerConnection = await startConnectRTC(callId, localStream, remoteStream)
-	} catch {
-		console.error('Unable to start a WebRTC connection')
+	// Start the WebRTC connection
+	const peerConnection = await startConnectRTC(
+		callId,
+		localStream,
+		remoteStream
+	).catch(() => {
 		return Promise.reject()
-	}
+	})
 
-	const videoCall = {
+	const videoCall: VideoCall = {
 		localStream,
 		remoteStream,
 		peerConnection,
 		callId,
 	}
 
+	// Handle unexpected call disconnect
 	peerConnection.addEventListener('connectionstatechange', () => {
 		if (
 			peerConnection.connectionState === 'disconnected' ||
@@ -101,7 +103,7 @@ export const startCall = async (
 	return videoCall
 }
 
-export const watchIncomingCalls = (
+export const listenForIncomingCalls = (
 	userId: string,
 	handleIncoming: (callId: string) => void
 ): (() => void) => {
@@ -110,12 +112,12 @@ export const watchIncomingCalls = (
 		where('recipient', '==', userId)
 	)
 
-	const unsubscribe = onSnapshot(q, querySnapshot => {
-		querySnapshot.docChanges().forEach(change => {
+	const unsubscribe = onSnapshot(q, snapshot => {
+		snapshot.docChanges().forEach(change => {
 			if (change.type === 'added') {
-				const data = change.doc.data() as CallDatabaseDocument
-				if (new Date().getTime() / 1000 - data.timestamp.seconds < 60) {
-					console.log('INCOMING CALL DATA', data)
+				const timestamp = change.doc.data().timestamp as CallDatabaseDocument['timestamp']
+				if (new Date().getTime() / 1000 - timestamp.seconds < 60) {
+					console.log('Observed incoming call')
 					handleIncoming(change.doc.id)
 				} else {
 					console.log('Observed old call')
@@ -124,7 +126,7 @@ export const watchIncomingCalls = (
 		})
 	})
 
-	console.log('WATCHING FOR INCOMING CALLS')
+	console.log('Listening for incoming calls')
 
 	return unsubscribe
 }
