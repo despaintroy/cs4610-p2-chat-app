@@ -1,16 +1,37 @@
 import { Button, Input, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
-import { joinCall, startCall } from 'utils/helpers/videoCall'
+import {
+	joinCall,
+	startCall,
+	watchIncomingCalls,
+} from 'utils/helpers/videoCall'
+import { auth } from 'utils/services/auth'
 
 const WebRtcTest: React.FC = () => {
 	const [callId, setCallId] = React.useState('')
+	const [otherUserId, setOtherUserId] = React.useState('')
 
 	const localVideoEl = React.useRef<HTMLVideoElement>(null)
 	const remoteVideoEl = React.useRef<HTMLVideoElement>(null)
 
 	const [localStream, setLocalStream] = useState<MediaStream | null>(null)
 	const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+
+	useEffect(() => {
+		if (auth.currentUser) {
+			watchIncomingCalls(auth.currentUser.uid, (callId: string) => {
+				console.log('RECEIVED INCOMING CALL', callId)
+				const willJoin = confirm('Incoming call from ' + callId)
+				if (willJoin) {
+					joinCall(callId).then(r => {
+						setLocalStream(r.localStream)
+						setRemoteStream(r.remoteStream)
+					})
+				}
+			})
+		}
+	}, [])
 
 	useEffect(() => {
 		if (localStream && localVideoEl.current) {
@@ -30,10 +51,18 @@ const WebRtcTest: React.FC = () => {
 			<Box
 				sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: '20px' }}
 			>
+				<Typography>
+					My ID: <code>{auth.currentUser?.uid}</code>
+				</Typography>
+				<Input
+					placeholder='Other User ID'
+					onChange={(value): void => setOtherUserId(value.target.value)}
+				/>
 				<Button
 					variant='contained'
+					disabled={!otherUserId}
 					onClick={(): void => {
-						startCall().then(r => {
+						startCall(otherUserId).then(r => {
 							setLocalStream(r.localStream)
 							setRemoteStream(r.remoteStream)
 							console.log('CALL ID:', r.callId)
@@ -48,6 +77,7 @@ const WebRtcTest: React.FC = () => {
 				/>
 				<Button
 					variant='contained'
+					disabled={!callId}
 					onClick={(): void => {
 						joinCall(callId).then(r => {
 							setLocalStream(r.localStream)

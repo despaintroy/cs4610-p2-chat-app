@@ -6,22 +6,17 @@ import {
 	onSnapshot,
 	updateDoc,
 } from 'firebase/firestore'
-import { auth } from './auth'
+import { Call } from 'utils/helpers/videoCall'
 import { database } from './firebase'
 
-interface Offer {
+export interface Offer {
 	type: RTCSdpType
 	sdp: string
 }
 
-interface Answer {
+export interface Answer {
 	type: RTCSdpType
 	sdp: string
-}
-
-interface Call {
-	offer?: Offer
-	answer?: Answer
 }
 
 const RTC_CONFIG: RTCConfiguration = {
@@ -34,6 +29,7 @@ const RTC_CONFIG: RTCConfiguration = {
 }
 
 export const startConnectRTC = async (
+	callId: string,
 	localStream: MediaStream,
 	remoteStream: MediaStream
 ): Promise<string> => {
@@ -63,14 +59,14 @@ export const startConnectRTC = async (
 		return Promise.reject()
 	}
 
-	let callId: string
-
+	// Add offer to the call document
 	try {
-		callId = await createCallDocument(
-			sessionDescription.type,
-			sessionDescription.sdp
-		)
-		console.log('GENERATED CALL ID:', callId)
+		await updateDoc(doc(database, 'calls', callId), {
+			offer: {
+				type: sessionDescription.type,
+				sdp: sessionDescription.sdp,
+			},
+		})
 	} catch {
 		console.error('Failed to send offer')
 		return Promise.reject()
@@ -186,22 +182,4 @@ export const acceptConnectRTC = async (
 				}
 			})
 	)
-}
-
-// Creates the Call object in the database and returns its ID
-async function createCallDocument(
-	type: RTCSdpType,
-	sdp: string
-): Promise<string> {
-	if (!auth.currentUser) return Promise.reject()
-
-	const call: Call = {
-		offer: {
-			type,
-			sdp,
-		},
-	}
-
-	const ref = await addDoc(collection(database, 'calls'), call)
-	return ref.id
 }
