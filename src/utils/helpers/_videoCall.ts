@@ -47,7 +47,7 @@ export const requestDeviceAV = async (): Promise<MediaStream> =>
 
 export const startCall = async (
 	recipientId: string,
-	onDisconnect: () => void
+	onDisconnect?: () => void
 ): Promise<VideoCall> => {
 	const remoteStream = new MediaStream()
 	let callId: string
@@ -96,7 +96,7 @@ export const startCall = async (
 		) {
 			console.log('WebRTC connection has been disconnected')
 			disconnectCall(videoCall)
-			onDisconnect()
+			onDisconnect && onDisconnect()
 		}
 	})
 
@@ -115,7 +115,8 @@ export const listenForIncomingCalls = (
 	const unsubscribe = onSnapshot(q, snapshot => {
 		snapshot.docChanges().forEach(change => {
 			if (change.type === 'added') {
-				const timestamp = change.doc.data().timestamp as CallDatabaseDocument['timestamp']
+				const timestamp = change.doc.data()
+					.timestamp as CallDatabaseDocument['timestamp']
 				if (new Date().getTime() / 1000 - timestamp.seconds < 60) {
 					console.log('Observed incoming call')
 					handleIncoming(change.doc.id)
@@ -133,7 +134,7 @@ export const listenForIncomingCalls = (
 
 export const joinCall = async (
 	callId: string,
-	onDisconnect: () => void
+	onDisconnect?: () => void
 ): Promise<VideoCall> => {
 	let localStream: MediaStream
 	const remoteStream = new MediaStream()
@@ -169,7 +170,7 @@ export const joinCall = async (
 		) {
 			console.log('WebRTC connection has been disconnected')
 			disconnectCall(videoCall)
-			onDisconnect()
+			onDisconnect && onDisconnect()
 		}
 	})
 

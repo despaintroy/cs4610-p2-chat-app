@@ -6,7 +6,7 @@ import {
 	onSnapshot,
 	updateDoc,
 } from 'firebase/firestore'
-import { CallDatabaseDocument } from 'utils/helpers/videoCall'
+import { CallDatabaseDocument } from 'utils/helpers/_videoCall'
 import { database } from './firebase'
 
 export interface Offer {

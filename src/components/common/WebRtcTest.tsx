@@ -1,42 +1,39 @@
 import { Button, Input, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useEffect, useState } from 'react'
-import {
-	disconnectCall,
-	joinCall,
-	listenForIncomingCalls,
-	startCall,
-	VideoCall,
-} from 'utils/helpers/videoCall'
+import React, { useEffect } from 'react'
+import useVideoCall, { CallStatus } from 'utils/helpers/useVideoCall'
 import { auth } from 'utils/services/auth'
 
 const WebRtcTest: React.FC = () => {
 	const [otherUserId, setOtherUserId] = React.useState('')
 
+	const videoCall = useVideoCall()
+
 	const localVideoEl = React.useRef<HTMLVideoElement>(null)
 	const remoteVideoEl = React.useRef<HTMLVideoElement>(null)
-
-	const [videoCall, setVideoCall] = useState<VideoCall>()
-
-	const onDisconnect = (): void => console.log('onDisconnect')
 
 	useEffect(() => {
 		if (!auth.currentUser) return
 
-		listenForIncomingCalls(auth.currentUser.uid, (callId: string) => {
+		videoCall.listenForIncomingCalls(auth.currentUser.uid, (callId: string) => {
 			console.log('RECEIVED INCOMING CALL', callId)
 			const willJoin = confirm('Incoming call from ' + callId)
-			if (willJoin) joinCall(callId, onDisconnect).then(setVideoCall)
+			if (willJoin) videoCall.join(callId)
 		})
 	}, [auth.currentUser])
 
 	// When call is created, attach video streams to the video elements
 	useEffect(() => {
-		if (!videoCall || !localVideoEl.current || !remoteVideoEl.current) return
+		if (!localVideoEl.current || !remoteVideoEl.current) return
 
-		localVideoEl.current.srcObject = videoCall.localStream
-		remoteVideoEl.current.srcObject = videoCall.remoteStream
-	}, [videoCall, localVideoEl, remoteVideoEl])
+		localVideoEl.current.srcObject = videoCall.streams.local
+		remoteVideoEl.current.srcObject = videoCall.streams.incoming
+	}, [
+		videoCall.streams.local,
+		videoCall.streams.incoming,
+		localVideoEl.current,
+		remoteVideoEl.current,
+	])
 
 	return (
 		<Box sx={{ py: 4 }}>
@@ -55,15 +52,15 @@ const WebRtcTest: React.FC = () => {
 					variant='contained'
 					disabled={!otherUserId}
 					onClick={(): void => {
-						startCall(otherUserId, onDisconnect).then(setVideoCall)
+						videoCall.callUser(otherUserId)
 					}}
 				>
 					Request Call
 				</Button>
 				<Button
-					disabled={!videoCall}
+					disabled={videoCall.callStatus === CallStatus.DISCONNECTED}
 					variant='contained'
-					onClick={(): void => videoCall && disconnectCall(videoCall)}
+					onClick={(): void => videoCall.disconnect()}
 				>
 					End Call
 				</Button>
