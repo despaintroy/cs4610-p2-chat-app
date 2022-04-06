@@ -1,5 +1,15 @@
 import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
-import { Button, Input, Stack, ToggleButton, Typography } from '@mui/material'
+import {
+	Button,
+	FormControl,
+	Input,
+	InputLabel,
+	MenuItem,
+	Select,
+	Stack,
+	ToggleButton,
+	Typography,
+} from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useEffect } from 'react'
 import useVideoCall, { CallStatus } from 'utils/helpers/useVideoCall'
@@ -75,6 +85,30 @@ const WebRtcTest: React.FC = () => {
 						{videoCall.video.muted ? <VideocamOff /> : <Videocam />}
 					</ToggleButton>
 
+					<FormControl fullWidth>
+						<InputLabel id='camera-select-label'>Select Camera</InputLabel>
+						<Select
+							labelId='camera-select-label'
+							id='camera-select'
+							value={videoCall.video.selectedCamera?.deviceId || 'none'}
+							disabled={!videoCall.video.selectedCamera}
+							label='Select Camera'
+							fullWidth
+							onChange={(e): void => videoCall.video.setCamera(e.target.value)}
+						>
+							{!videoCall.video.selectedCamera && (
+								<MenuItem value='none'>No cameras available</MenuItem>
+							)}
+							{videoCall.video.availableCameras.map(camera => (
+								<MenuItem key={camera.deviceId} value={camera.deviceId}>
+									{camera.label}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				</Stack>
+
+				<Stack direction='row' gap={2}>
 					<ToggleButton
 						value='check'
 						selected={videoCall.audio.muted}
@@ -82,6 +116,30 @@ const WebRtcTest: React.FC = () => {
 					>
 						{videoCall.audio.muted ? <MicOff /> : <Mic />}
 					</ToggleButton>
+
+					<FormControl fullWidth>
+						<InputLabel id='microphone-select-label'>
+							Select Microphone
+						</InputLabel>
+						<Select
+							labelId='microphone-select-label'
+							id='microphone-select'
+							value={videoCall.audio.selectedMic?.deviceId || 'none'}
+							disabled={!videoCall.audio.selectedMic}
+							label='Select Microphone'
+							fullWidth
+							onChange={(e): void => videoCall.audio.setMic(e.target.value)}
+						>
+							{!videoCall.audio.selectedMic && (
+								<MenuItem value='none'>No microphones available</MenuItem>
+							)}
+							{videoCall.audio.availableMics.map(microphone => (
+								<MenuItem key={microphone.deviceId} value={microphone.deviceId}>
+									{microphone.label}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
 				</Stack>
 
 				<div id='videos'>

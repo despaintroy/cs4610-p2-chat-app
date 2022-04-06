@@ -20,11 +20,17 @@ const useVideoCall = (): {
 		setMuted: (muted: boolean) => void
 		toggleMuted: () => void
 		muted: boolean
+		availableCameras: MediaDeviceInfo[]
+		setCamera: (deviceId: string) => void
+		selectedCamera: MediaDeviceInfo | null
 	}
 	audio: {
 		setMuted: (muted: boolean) => void
 		toggleMuted: () => void
 		muted: boolean
+		availableMics: MediaDeviceInfo[]
+		setMic: (deviceId: string) => void
+		selectedMic: MediaDeviceInfo | null
 	}
 	listenForIncomingCalls: (
 		userId: string,
@@ -42,6 +48,16 @@ const useVideoCall = (): {
 	const [videoMuted, setVideoMuted] = useState(false)
 	const [audioMuted, setAudioMuted] = useState(false)
 
+	const [availableCameras, setAvailableCameras] = useState<MediaDeviceInfo[]>(
+		[]
+	)
+	const [selectedCamera, setSelectedCamera] = useState<MediaDeviceInfo | null>(
+		null
+	)
+
+	const [availableMics, setAvailableMics] = useState<MediaDeviceInfo[]>([])
+	const [selectedMic, setSelectedMic] = useState<MediaDeviceInfo | null>(null)
+
 	useEffect(() => {
 		console.log('VIDEO MUTED:', videoMuted)
 		localStream
@@ -55,6 +71,22 @@ const useVideoCall = (): {
 			?.getAudioTracks()
 			.forEach(track => (track.enabled = !audioMuted))
 	}, [audioMuted])
+
+	useEffect(() => {
+		navigator.mediaDevices
+			.getUserMedia({ video: true, audio: true })
+			.then(() => {
+				navigator.mediaDevices.enumerateDevices().then(devices => {
+					const cameras = devices.filter(device => device.kind === 'videoinput')
+					setAvailableCameras(cameras)
+					setSelectedCamera(cameras[0] || null)
+
+					const mics = devices.filter(device => device.kind === 'audioinput')
+					setAvailableMics(mics)
+					setSelectedMic(mics[0] || null)
+				})
+			})
+	}, [])
 
 	const callUser = async (
 		userId: string,
@@ -91,6 +123,16 @@ const useVideoCall = (): {
 		setCallStatus(CallStatus.DISCONNECTED)
 	}
 
+	const setCameraById = (deviceId: string): void => {
+		const camera = availableCameras.find(device => device.deviceId === deviceId)
+		setSelectedCamera(camera || null)
+	}
+
+	const setMicById = (deviceId: string): void => {
+		const mic = availableMics.find(device => device.deviceId === deviceId)
+		setSelectedMic(mic || null)
+	}
+
 	return {
 		streams: {
 			local: localStream,
@@ -104,11 +146,17 @@ const useVideoCall = (): {
 			setMuted: setVideoMuted,
 			toggleMuted: () => setVideoMuted(!videoMuted),
 			muted: videoMuted,
+			availableCameras,
+			setCamera: setCameraById,
+			selectedCamera,
 		},
 		audio: {
 			setMuted: setAudioMuted,
 			toggleMuted: () => setAudioMuted(!audioMuted),
 			muted: audioMuted,
+			availableMics,
+			setMic: setMicById,
+			selectedMic,
 		},
 		listenForIncomingCalls,
 	}
