@@ -88,6 +88,37 @@ const useVideoCall = (): {
 			})
 	}, [])
 
+	useEffect(() => {
+		navigator.mediaDevices
+			.getUserMedia({
+				audio: {
+					deviceId: selectedMic?.deviceId,
+				},
+				video: {
+					deviceId: selectedCamera?.deviceId,
+				},
+			})
+			.then(stream => {
+				setLocalStream(stream)
+			})
+	}, [selectedMic, selectedCamera])
+
+	// When the sources of the local stream change, we need to update the WebRTC tracks
+	useEffect(() => {
+		const currentAudioTrack = localStream?.getAudioTracks()[0]
+		const currentVideoTrack = localStream?.getVideoTracks()[0]
+
+		peerConnection?.getSenders().forEach(sender => {
+			const track = sender.track
+			if (track?.kind === 'audio' && track.id !== currentAudioTrack?.id) {
+				currentAudioTrack && sender.replaceTrack(currentAudioTrack)
+			}
+			if (track?.kind === 'video' && track.id !== currentVideoTrack?.id) {
+				currentVideoTrack && sender.replaceTrack(currentVideoTrack)
+			}
+		})
+	}, [localStream])
+
 	const callUser = async (
 		userId: string,
 		onDisconnect?: () => void
