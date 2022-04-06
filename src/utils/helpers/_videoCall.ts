@@ -15,13 +15,6 @@ import {
 	startConnectRTC,
 } from 'utils/services/rtc'
 
-export interface VideoCall {
-	localStream: MediaStream
-	remoteStream: MediaStream
-	peerConnection: RTCPeerConnection
-	callId: string
-}
-
 export interface CallDatabaseDocument {
 	caller: string
 	recipient: string
@@ -34,32 +27,17 @@ export interface CallDatabaseDocument {
 	calleeCandidates?: unknown
 }
 
-export const requestDeviceMedia = async (
-	constraints?: MediaStreamConstraints
-): Promise<MediaStream> =>
-	navigator.mediaDevices
-		.getUserMedia(
-			constraints ?? {
-				video: true,
-				audio: true,
-			}
-		)
-		.catch(() => {
-			console.error('Failed to get streams from camera and microphone')
-			return Promise.reject()
-		})
-
 export const startCall = async (
 	recipientId: string,
-	onDisconnect?: () => void
-): Promise<VideoCall> => {
+	localStream: MediaStream,
+	onDisconnect: () => void
+): Promise<{
+	remoteStream: MediaStream
+	peerConnection: RTCPeerConnection
+	callId: string
+}> => {
 	const remoteStream = new MediaStream()
 	let callId: string
-
-	// Acess device camera and microphone
-	const localStream = await requestDeviceMedia().catch(() => {
-		return Promise.reject()
-	})
 
 	// Try to add the call doc to the Firestore database
 	try {
@@ -85,13 +63,6 @@ export const startCall = async (
 		return Promise.reject()
 	})
 
-	const videoCall: VideoCall = {
-		localStream,
-		remoteStream,
-		peerConnection,
-		callId,
-	}
-
 	// Handle unexpected call disconnect
 	peerConnection.addEventListener('connectionstatechange', () => {
 		if (
@@ -99,12 +70,15 @@ export const startCall = async (
 			peerConnection.connectionState === 'failed'
 		) {
 			console.log('WebRTC connection has been disconnected')
-			disconnectCall(videoCall)
-			onDisconnect && onDisconnect()
+			onDisconnect()
 		}
 	})
 
-	return videoCall
+	return {
+		remoteStream,
+		peerConnection,
+		callId,
+	}
 }
 
 export const listenForIncomingCalls = (
@@ -138,19 +112,14 @@ export const listenForIncomingCalls = (
 
 export const joinCall = async (
 	callId: string,
-	onDisconnect?: () => void
-): Promise<VideoCall> => {
-	let localStream: MediaStream
+	localStream: MediaStream,
+	onDisconnect: () => void
+): Promise<{
+	remoteStream: MediaStream
+	peerConnection: RTCPeerConnection
+}> => {
 	const remoteStream = new MediaStream()
 	let peerConnection: RTCPeerConnection
-
-	// Try to access device camera and microphone
-	try {
-		localStream = await requestDeviceMedia()
-	} catch {
-		console.error('Unable to access device camera and microphone')
-		return Promise.reject()
-	}
 
 	// Try to accept the WebRTC connection
 	try {
@@ -160,29 +129,18 @@ export const joinCall = async (
 		return Promise.reject()
 	}
 
-	const videoCall = {
-		localStream,
-		remoteStream,
-		peerConnection,
-		callId,
-	}
-
 	peerConnection.addEventListener('connectionstatechange', () => {
 		if (
 			peerConnection.connectionState === 'disconnected' ||
 			peerConnection.connectionState === 'failed'
 		) {
 			console.log('WebRTC connection has been disconnected')
-			disconnectCall(videoCall)
-			onDisconnect && onDisconnect()
+			onDisconnect()
 		}
 	})
 
-	return videoCall
-}
-
-export const disconnectCall = (call: VideoCall): void => {
-	call.localStream.getTracks().forEach(track => track.stop())
-	call.remoteStream.getTracks().forEach(track => track.stop())
-	call.peerConnection.close()
+	return {
+		remoteStream,
+		peerConnection,
+	}
 }

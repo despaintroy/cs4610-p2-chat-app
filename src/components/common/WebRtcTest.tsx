@@ -36,7 +36,7 @@ const WebRtcTest: React.FC = () => {
 		videoCall.listenForIncomingCalls(auth.currentUser.uid, (callId: string) => {
 			console.log('RECEIVED INCOMING CALL', callId)
 			const willJoin = confirm('Incoming call from ' + callId)
-			if (willJoin) videoCall.join(callId)
+			if (willJoin) videoCall.joinCall(callId)
 		})
 	}, [auth.currentUser])
 
@@ -78,7 +78,7 @@ const WebRtcTest: React.FC = () => {
 				<Button
 					disabled={videoCall.callStatus === CallStatus.DISCONNECTED}
 					variant='contained'
-					onClick={(): void => videoCall.disconnect()}
+					onClick={(): void => videoCall.endCall()}
 				>
 					End Call
 				</Button>
