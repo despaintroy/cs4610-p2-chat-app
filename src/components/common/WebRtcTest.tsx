@@ -1,4 +1,5 @@
-import { Button, Input, Typography } from '@mui/material'
+import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
+import { Button, Input, Stack, ToggleButton, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useEffect } from 'react'
 import useVideoCall, { CallStatus } from 'utils/helpers/useVideoCall'
@@ -64,6 +65,24 @@ const WebRtcTest: React.FC = () => {
 				>
 					End Call
 				</Button>
+
+				<Stack direction='row' gap={2}>
+					<ToggleButton
+						value='check'
+						selected={videoCall.video.muted}
+						onChange={(): void => videoCall.video.toggleMuted()}
+					>
+						{videoCall.video.muted ? <VideocamOff /> : <Videocam />}
+					</ToggleButton>
+
+					<ToggleButton
+						value='check'
+						selected={videoCall.audio.muted}
+						onChange={(): void => videoCall.audio.toggleMuted()}
+					>
+						{videoCall.audio.muted ? <MicOff /> : <Mic />}
+					</ToggleButton>
+				</Stack>
 
 				<div id='videos'>
 					<video

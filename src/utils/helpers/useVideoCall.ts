@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { joinCall, listenForIncomingCalls, startCall } from './_videoCall'
 
 export enum CallStatus {
@@ -16,6 +16,16 @@ const useVideoCall = (): {
 	join: (callId: string, onDisconnect?: () => void) => Promise<void>
 	disconnect: () => void
 	callStatus: CallStatus
+	video: {
+		setMuted: (muted: boolean) => void
+		toggleMuted: () => void
+		muted: boolean
+	}
+	audio: {
+		setMuted: (muted: boolean) => void
+		toggleMuted: () => void
+		muted: boolean
+	}
 	listenForIncomingCalls: (
 		userId: string,
 		handleIncoming: (callId: string) => void
@@ -29,6 +39,22 @@ const useVideoCall = (): {
 	const [callStatus, setCallStatus] = useState<CallStatus>(
 		CallStatus.DISCONNECTED
 	)
+	const [videoMuted, setVideoMuted] = useState(false)
+	const [audioMuted, setAudioMuted] = useState(false)
+
+	useEffect(() => {
+		console.log('VIDEO MUTED:', videoMuted)
+		localStream
+			?.getVideoTracks()
+			.forEach(track => (track.enabled = !videoMuted))
+	}, [videoMuted])
+
+	useEffect(() => {
+		console.log('AUDIO MUTED:', audioMuted)
+		localStream
+			?.getAudioTracks()
+			.forEach(track => (track.enabled = !audioMuted))
+	}, [audioMuted])
 
 	const callUser = async (
 		userId: string,
@@ -74,6 +100,16 @@ const useVideoCall = (): {
 		join: joinExistingCall,
 		disconnect: disconnectCall,
 		callStatus,
+		video: {
+			setMuted: setVideoMuted,
+			toggleMuted: () => setVideoMuted(!videoMuted),
+			muted: videoMuted,
+		},
+		audio: {
+			setMuted: setAudioMuted,
+			toggleMuted: () => setAudioMuted(!audioMuted),
+			muted: audioMuted,
+		},
 		listenForIncomingCalls,
 	}
 }
