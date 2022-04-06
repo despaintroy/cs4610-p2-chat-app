@@ -34,12 +34,16 @@ export interface CallDatabaseDocument {
 	calleeCandidates?: unknown
 }
 
-export const requestDeviceAV = async (): Promise<MediaStream> =>
+export const requestDeviceMedia = async (
+	constraints?: MediaStreamConstraints
+): Promise<MediaStream> =>
 	navigator.mediaDevices
-		.getUserMedia({
-			video: true,
-			audio: true,
-		})
+		.getUserMedia(
+			constraints ?? {
+				video: true,
+				audio: true,
+			}
+		)
 		.catch(() => {
 			console.error('Failed to get streams from camera and microphone')
 			return Promise.reject()
@@ -53,7 +57,7 @@ export const startCall = async (
 	let callId: string
 
 	// Acess device camera and microphone
-	const localStream = await requestDeviceAV().catch(() => {
+	const localStream = await requestDeviceMedia().catch(() => {
 		return Promise.reject()
 	})
 
@@ -142,7 +146,7 @@ export const joinCall = async (
 
 	// Try to access device camera and microphone
 	try {
-		localStream = await requestDeviceAV()
+		localStream = await requestDeviceMedia()
 	} catch {
 		console.error('Unable to access device camera and microphone')
 		return Promise.reject()

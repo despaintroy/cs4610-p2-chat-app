@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
-import { joinCall, listenForIncomingCalls, startCall } from './_videoCall'
+import {
+	joinCall,
+	listenForIncomingCalls,
+	requestDeviceMedia,
+	startCall,
+} from './_videoCall'
 
 export enum CallStatus {
 	DISCONNECTED,
@@ -16,6 +21,11 @@ const useVideoCall = (): {
 	join: (callId: string, onDisconnect?: () => void) => Promise<void>
 	disconnect: () => void
 	callStatus: CallStatus
+	screenShare: {
+		setIsSharing: (isSharing: boolean) => void
+		toggleSharing: () => void
+		isSharing: boolean
+	}
 	video: {
 		setMuted: (muted: boolean) => void
 		toggleMuted: () => void
@@ -58,50 +68,85 @@ const useVideoCall = (): {
 	const [availableMics, setAvailableMics] = useState<MediaDeviceInfo[]>([])
 	const [selectedMic, setSelectedMic] = useState<MediaDeviceInfo | null>(null)
 
-	useEffect(() => {
-		console.log('VIDEO MUTED:', videoMuted)
-		localStream
-			?.getVideoTracks()
-			.forEach(track => (track.enabled = !videoMuted))
-	}, [videoMuted])
+	const [isSharing, setIsSharing] = useState(false)
+	const [screenShareTrack, setScreenShareTrack] =
+		useState<MediaStreamTrack | null>(null)
 
 	useEffect(() => {
-		console.log('AUDIO MUTED:', audioMuted)
-		localStream
-			?.getAudioTracks()
-			.forEach(track => (track.enabled = !audioMuted))
-	}, [audioMuted])
+		requestDeviceMedia().then(stream => {
+			setLocalStream(stream)
 
-	useEffect(() => {
-		navigator.mediaDevices
-			.getUserMedia({ video: true, audio: true })
-			.then(() => {
-				navigator.mediaDevices.enumerateDevices().then(devices => {
-					const cameras = devices.filter(device => device.kind === 'videoinput')
-					setAvailableCameras(cameras)
-					setSelectedCamera(cameras[0] || null)
+			navigator.mediaDevices.enumerateDevices().then(devices => {
+				const cameras = devices.filter(device => device.kind === 'videoinput')
+				setAvailableCameras(cameras)
+				setSelectedCamera(cameras[0] || null)
 
-					const mics = devices.filter(device => device.kind === 'audioinput')
-					setAvailableMics(mics)
-					setSelectedMic(mics[0] || null)
-				})
+				const mics = devices.filter(device => device.kind === 'audioinput')
+				setAvailableMics(mics)
+				setSelectedMic(mics[0] || null)
 			})
+		})
 	}, [])
 
 	useEffect(() => {
-		navigator.mediaDevices
-			.getUserMedia({
-				audio: {
-					deviceId: selectedMic?.deviceId,
-				},
-				video: {
-					deviceId: selectedCamera?.deviceId,
-				},
-			})
-			.then(stream => {
-				setLocalStream(stream)
-			})
-	}, [selectedMic, selectedCamera])
+		streamSelectedInputs()
+	}, [selectedCamera, isSharing, videoMuted])
+
+	useEffect(() => {
+		streamSelectedInputs()
+	}, [selectedMic, audioMuted])
+
+	useEffect(() => {
+		!isSharing && screenShareTrack?.stop()
+	}, [isSharing])
+
+	async function streamSelectedInputs(): Promise<void> {
+		let targetVideoTrack: MediaStreamTrack | null | undefined = null
+		let targetAudioTrack: MediaStreamTrack | null | undefined = null
+
+		const deviceMediaStream = await requestDeviceMedia({
+			audio: {
+				deviceId: selectedMic?.deviceId,
+			},
+			video: {
+				deviceId: selectedCamera?.deviceId,
+			},
+		}).catch(() => null)
+
+		targetAudioTrack = audioMuted
+			? null
+			: deviceMediaStream?.getAudioTracks()[0]
+
+		if (!isSharing) {
+			targetVideoTrack = videoMuted
+				? null
+				: deviceMediaStream?.getVideoTracks()[0]
+		} else if (screenShareTrack && screenShareTrack.readyState !== 'ended') {
+			targetVideoTrack = screenShareTrack
+		} else {
+			const screenVideoTrack = await navigator.mediaDevices
+				.getDisplayMedia()
+				.then(stream => stream.getVideoTracks()[0])
+				.catch(() => setIsSharing(false))
+
+			if (screenVideoTrack) {
+				screenVideoTrack.onended = (): void => {
+					setIsSharing(false), setScreenShareTrack(null)
+				}
+
+				targetVideoTrack = screenVideoTrack
+				setScreenShareTrack(screenVideoTrack)
+			} else {
+				console.error('Failed to share screen')
+			}
+		}
+
+		const tracks: MediaStreamTrack[] = []
+		if (targetAudioTrack) tracks.push(targetAudioTrack)
+		if (targetVideoTrack) tracks.push(targetVideoTrack)
+
+		setLocalStream(new MediaStream(tracks))
+	}
 
 	// When the sources of the local stream change, we need to update the WebRTC tracks
 	useEffect(() => {
@@ -110,11 +155,17 @@ const useVideoCall = (): {
 
 		peerConnection?.getSenders().forEach(sender => {
 			const track = sender.track
-			if (track?.kind === 'audio' && track.id !== currentAudioTrack?.id) {
-				currentAudioTrack && sender.replaceTrack(currentAudioTrack)
+			if (track?.kind === 'audio') {
+				if (currentAudioTrack && track.id !== currentAudioTrack.id) {
+					sender.replaceTrack(currentAudioTrack)
+				}
+				track.enabled = !!currentAudioTrack
 			}
-			if (track?.kind === 'video' && track.id !== currentVideoTrack?.id) {
-				currentVideoTrack && sender.replaceTrack(currentVideoTrack)
+			if (track?.kind === 'video') {
+				if (currentVideoTrack && track.id !== currentVideoTrack.id) {
+					sender.replaceTrack(currentVideoTrack)
+				}
+				track.enabled = !!currentVideoTrack
 			}
 		})
 	}, [localStream])
@@ -126,7 +177,6 @@ const useVideoCall = (): {
 		return startCall(userId, onDisconnect).then(v => {
 			setCallStatus(CallStatus.CONNECTED)
 
-			setLocalStream(v.localStream)
 			setIncomingStream(v.remoteStream)
 			setPeerConnection(v.peerConnection)
 			setCallId(v.callId)
@@ -140,7 +190,6 @@ const useVideoCall = (): {
 		return joinCall(callId, onDisconnect).then(v => {
 			setCallStatus(CallStatus.CONNECTED)
 
-			setLocalStream(v.localStream)
 			setIncomingStream(v.remoteStream)
 			setPeerConnection(v.peerConnection)
 			setCallId(v.callId)
@@ -173,6 +222,11 @@ const useVideoCall = (): {
 		join: joinExistingCall,
 		disconnect: disconnectCall,
 		callStatus,
+		screenShare: {
+			setIsSharing,
+			isSharing,
+			toggleSharing: () => setIsSharing(!isSharing),
+		},
 		video: {
 			setMuted: setVideoMuted,
 			toggleMuted: () => setVideoMuted(!videoMuted),

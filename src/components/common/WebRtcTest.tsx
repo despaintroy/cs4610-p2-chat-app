@@ -1,4 +1,11 @@
-import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
+import {
+	CancelPresentation,
+	Mic,
+	MicOff,
+	PresentToAll,
+	Videocam,
+	VideocamOff,
+} from '@mui/icons-material'
 import {
 	Button,
 	FormControl,
@@ -141,6 +148,24 @@ const WebRtcTest: React.FC = () => {
 						</Select>
 					</FormControl>
 				</Stack>
+
+				<Button
+					variant='contained'
+					onClick={(): void => {
+						videoCall.screenShare.toggleSharing()
+					}}
+					endIcon={
+						videoCall.screenShare.isSharing ? (
+							<CancelPresentation />
+						) : (
+							<PresentToAll />
+						)
+					}
+				>
+					{videoCall.screenShare.isSharing
+						? 'Stop Sharing Screen'
+						: 'Share Screen'}
+				</Button>
 
 				<div id='videos'>
 					<video

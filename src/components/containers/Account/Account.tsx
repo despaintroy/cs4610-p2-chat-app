@@ -1,5 +1,6 @@
 import { Button, Container, Divider, Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import WebRtcTest from 'components/common/WebRtcTest'
 import React, { FC, useContext } from 'react'
 import { AuthContext } from 'Router'
 import PasswordForm from './PasswordForm'
@@ -10,7 +11,15 @@ const Account: FC = () => {
 	const { signOut } = useContext(AuthContext)
 
 	return (
-		<Box sx={{ p: 2, pt: 4, backgroundColor: '#37393e', width: '100%' }}>
+		<Box
+			sx={{
+				p: 2,
+				pt: 4,
+				backgroundColor: '#37393e',
+				width: '100%',
+				overflowY: 'scroll',
+			}}
+		>
 			<Container maxWidth='sm'>
 				<Stack direction='row'>
 					<Typography variant='h1'>Account</Typography>
@@ -36,6 +45,8 @@ const Account: FC = () => {
 					<Typography variant='h2'>Password</Typography>
 					<PasswordForm />
 				</Box>
+
+				<WebRtcTest />
 			</Container>
 		</Box>
 	)
