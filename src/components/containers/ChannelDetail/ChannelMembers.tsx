@@ -94,12 +94,11 @@ const ChannelMembers: FC<{ userProfiles: PublicProfile[] }> = ({
 						</Stack>
 					</DialogContent>
 				</Dialog>
-				{selectedProfile && isShowVideoCall && (
-					<VideoCallDialog
-						profile={selectedProfile}
-						handleClose={hideVideoCall}
-					/>
-				)}
+				<VideoCallDialog
+					profile={selectedProfile}
+					handleClose={hideVideoCall}
+					show={isShowVideoCall}
+				/>
 			</Portal>
 		</Box>
 	)

@@ -1,7 +1,9 @@
 import {
+	CancelPresentation,
 	Check,
 	Mic,
 	MicOff,
+	PresentToAll,
 	Settings,
 	Videocam,
 	VideocamOff,
@@ -27,9 +29,10 @@ import useVideoCall, { CallStatus } from 'utils/helpers/useVideoCall'
 import { PublicProfile } from 'utils/services/models'
 
 const VideoCallDialog: React.FC<{
-	profile: PublicProfile
+	profile: PublicProfile | undefined
 	handleClose: () => void
-}> = ({ profile, handleClose }) => {
+	show: boolean
+}> = ({ profile, handleClose, show }) => {
 	const videoCall = useVideoCall()
 
 	const localVideoEl = useRef<HTMLVideoElement>(null)
@@ -38,8 +41,9 @@ const VideoCallDialog: React.FC<{
 	const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null)
 
 	useEffect(() => {
-		videoCall.startPreview()
-	}, [])
+		if (show) videoCall.startPreview()
+		else videoCall.stopPreview()
+	}, [show])
 
 	useEffect(() => {
 		if (!localVideoEl.current) return
@@ -51,10 +55,19 @@ const VideoCallDialog: React.FC<{
 		remoteVideoEl.current.srcObject = videoCall.streams.incoming
 	}, [videoCall.streams.incoming, remoteVideoEl.current])
 
+	if (!profile) return null
+
 	return (
-		<Dialog fullScreen open={true}>
+		<Dialog fullScreen open={show && !!profile}>
 			<Stack height='100%'>
-				<Box sx={{ bgcolor: '#000', flexGrow: 1, position: 'relative' }}>
+				<Box
+					sx={{
+						bgcolor: '#000',
+						height: '0',
+						flexGrow: 1,
+						position: 'relative',
+					}}
+				>
 					<video
 						ref={
 							videoCall.callStatus === CallStatus.DISCONNECTED
@@ -70,26 +83,24 @@ const VideoCallDialog: React.FC<{
 							height: '100%',
 						}}
 					/>
-					<video
-						ref={
-							videoCall.callStatus === CallStatus.DISCONNECTED
-								? remoteVideoEl
-								: localVideoEl
-						}
-						id='remoteVideo'
-						autoPlay
-						muted={videoCall.callStatus !== CallStatus.DISCONNECTED}
-						playsInline
-						style={{
-							border: '1px solid #ccc',
-							width: '300px',
-							height: 'auto',
-							position: 'absolute',
-							top: '10px',
-							left: '10px',
-							backgroundColor: '#111',
-						}}
-					/>
+					{videoCall.callStatus !== CallStatus.DISCONNECTED && (
+						<video
+							ref={localVideoEl}
+							id='remoteVideo'
+							autoPlay
+							muted
+							playsInline
+							style={{
+								border: '1px solid #ccc',
+								width: '300px',
+								height: 'auto',
+								position: 'absolute',
+								top: '10px',
+								left: '10px',
+								backgroundColor: '#111',
+							}}
+						/>
+					)}
 				</Box>
 				<AppBar position='static'>
 					<Toolbar sx={{ gap: 2 }}>
@@ -167,6 +178,7 @@ const VideoCallDialog: React.FC<{
 							value='check'
 							selected={videoCall.video.muted}
 							onChange={(): void => videoCall.video.toggleMuted()}
+							size='small'
 							disableRipple
 						>
 							{videoCall.video.muted ? <VideocamOff /> : <Videocam />}
@@ -176,10 +188,27 @@ const VideoCallDialog: React.FC<{
 							value='check'
 							selected={videoCall.audio.muted}
 							onChange={(): void => videoCall.audio.toggleMuted()}
+							size='small'
 							disableRipple
 						>
 							{videoCall.audio.muted ? <MicOff /> : <Mic />}
 						</ToggleButton>
+						<Button
+							color='inherit'
+							onClick={(): void => videoCall.screenShare.toggleSharing()}
+							startIcon={
+								videoCall.screenShare.isSharing ? (
+									<CancelPresentation />
+								) : (
+									<PresentToAll />
+								)
+							}
+							sx={{ px: '1rem' }}
+						>
+							{videoCall.screenShare.isSharing
+								? 'Stop Sharing'
+								: 'Share Screen'}
+						</Button>
 						{videoCall.callStatus === CallStatus.DISCONNECTED ? (
 							<Button
 								variant='contained'
@@ -197,6 +226,7 @@ const VideoCallDialog: React.FC<{
 								color='error'
 								onClick={(): void => {
 									videoCall.endCall()
+									videoCall.stopPreview()
 									handleClose()
 								}}
 								sx={{ marginLeft: 'auto' }}

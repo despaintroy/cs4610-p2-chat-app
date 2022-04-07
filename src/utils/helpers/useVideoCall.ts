@@ -9,6 +9,7 @@ export enum CallStatus {
 
 export interface UseVideoCallReturnType {
 	startPreview: () => Promise<void>
+	stopPreview: () => void
 	callUser: (userId: string, onDisconnect?: () => void) => Promise<void>
 	joinCall: (callId: string, onDisconnect?: () => void) => Promise<void>
 	endCall: () => void
@@ -90,6 +91,13 @@ const useVideoCall = (): UseVideoCallReturnType => {
 		})
 
 		return stream
+	}
+
+	const stopLocalStream = (): void => {
+		if (!localStream) return
+
+		localStream.getTracks().forEach(track => track.stop())
+		setLocalStream(null)
 	}
 
 	const setCameraById = (deviceId: string): void => {
@@ -217,7 +225,6 @@ const useVideoCall = (): UseVideoCallReturnType => {
 	}
 
 	const handleDisconnectCall = (callback?: () => void): void => {
-		localStream?.getTracks().forEach(track => track.stop())
 		incomingStream?.getTracks().forEach(track => track.stop())
 		peerConnection?.close()
 		setCallStatus(CallStatus.DISCONNECTED)
@@ -228,6 +235,7 @@ const useVideoCall = (): UseVideoCallReturnType => {
 		startPreview: async (): Promise<void> => {
 			await setupLocalStream()
 		},
+		stopPreview: stopLocalStream,
 		callUser,
 		joinCall: joinExistingCall,
 		endCall: handleDisconnectCall,
