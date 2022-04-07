@@ -20,6 +20,7 @@ import {
 	MenuItem,
 	MenuList,
 	Stack,
+	Switch,
 	ToggleButton,
 	Toolbar,
 } from '@mui/material'
@@ -39,6 +40,8 @@ const VideoCallDialog: React.FC<{
 	const remoteVideoEl = useRef<HTMLVideoElement>(null)
 
 	const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null)
+
+	const [mirror, setMirror] = useState(true)
 
 	useEffect(() => {
 		if (show) videoCall.startPreview()
@@ -78,6 +81,13 @@ const VideoCallDialog: React.FC<{
 						muted={videoCall.callStatus === CallStatus.DISCONNECTED}
 						autoPlay
 						playsInline
+						className={
+							mirror &&
+							videoCall.callStatus === CallStatus.DISCONNECTED &&
+							!videoCall.screenShare.isSharing
+								? 'mirror-video'
+								: ''
+						}
 						style={{
 							width: '100%',
 							height: '100%',
@@ -90,6 +100,9 @@ const VideoCallDialog: React.FC<{
 							autoPlay
 							muted
 							playsInline
+							className={
+								!videoCall.screenShare.isSharing && mirror ? 'mirror-video' : ''
+							}
 							style={{
 								border: '1px solid #ccc',
 								width: '300px',
@@ -150,6 +163,18 @@ const VideoCallDialog: React.FC<{
 									)
 								})}
 
+								<MenuItem
+									onClick={(): void => setMirror(!mirror)}
+									disableRipple
+									sx={{ mt: 1 }}
+								>
+									<ListItemText inset>Mirror my video preview</ListItemText>
+									<Switch
+										checked={mirror}
+										onChange={(): void => setMirror(!mirror)}
+									/>
+								</MenuItem>
+
 								<Divider>Microphone</Divider>
 								{videoCall.audio.availableMics.map(mic => {
 									const isSelected =
@@ -194,7 +219,7 @@ const VideoCallDialog: React.FC<{
 							{videoCall.audio.muted ? <MicOff /> : <Mic />}
 						</ToggleButton>
 						<Button
-							color='inherit'
+							color={videoCall.screenShare.isSharing ? 'error' : 'inherit'}
 							onClick={(): void => videoCall.screenShare.toggleSharing()}
 							startIcon={
 								videoCall.screenShare.isSharing ? (

@@ -71,3 +71,9 @@ a {
 		width: 100%;
 	}
 }
+
+.mirror-video {
+	transform: rotateY(180deg);
+	-webkit-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+}
