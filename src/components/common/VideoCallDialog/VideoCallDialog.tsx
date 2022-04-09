@@ -239,7 +239,10 @@ const VideoCallDialog: React.FC<{
 								variant='contained'
 								color='success'
 								onClick={(): void => {
-									videoCall.callUser(profile.id)
+									videoCall.callUser(profile.id, (): void => {
+										videoCall.stopPreview()
+										handleClose()
+									})
 								}}
 								sx={{ marginLeft: 'auto' }}
 							>

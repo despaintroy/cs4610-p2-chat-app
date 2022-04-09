@@ -1,9 +1,12 @@
 import {
 	addDoc,
 	collection,
+	doc,
 	onSnapshot,
 	query,
 	serverTimestamp,
+	Timestamp,
+	updateDoc,
 	where,
 } from 'firebase/firestore'
 import { auth } from 'utils/services/auth'
@@ -25,6 +28,8 @@ export interface CallDatabaseDocument {
 	offer?: Offer
 	answer?: Answer
 	calleeCandidates?: unknown
+	answered: boolean
+	ended: boolean
 }
 
 export const startCall = async (
@@ -46,6 +51,8 @@ export const startCall = async (
 			caller: auth.currentUser.uid,
 			recipient: recipientId,
 			timestamp: serverTimestamp(),
+			answered: false,
+			ended: false,
 		})
 		callId = ref.id
 		console.log('GENERATED CALL ID:', callId)
@@ -74,6 +81,17 @@ export const startCall = async (
 		}
 	})
 
+	// Handle call end
+	onSnapshot(doc(database, 'calls', callId), snapshot => {
+		const data = snapshot.data()
+		if (data?.ended) {
+			onDisconnect()
+			updateDoc(doc(database, 'calls', callId), {
+				ended: true,
+			})
+		}
+	})
+
 	return {
 		remoteStream,
 		peerConnection,
@@ -87,7 +105,8 @@ export const listenForIncomingCalls = (
 ): (() => void) => {
 	const q = query(
 		collection(database, 'calls'),
-		where('recipient', '==', userId)
+		where('recipient', '==', userId),
+		where('answered', '==', false)
 	)
 
 	const unsubscribe = onSnapshot(q, snapshot => {
@@ -95,7 +114,7 @@ export const listenForIncomingCalls = (
 			if (change.type === 'added') {
 				const timestamp = change.doc.data()
 					.timestamp as CallDatabaseDocument['timestamp']
-				if (new Date().getTime() / 1000 - timestamp.seconds < 60) {
+				if (Timestamp.now().seconds < timestamp.seconds + 60) {
 					console.log('Observed incoming call')
 					handleIncoming(change.doc.id)
 				} else {
@@ -124,23 +143,51 @@ export const joinCall = async (
 	// Try to accept the WebRTC connection
 	try {
 		peerConnection = await acceptConnectRTC(callId, localStream, remoteStream)
+		await updateDoc(doc(database, 'calls', callId), {
+			answered: true,
+		})
 	} catch {
 		console.error('Unable to join the WebRTC connection')
 		return Promise.reject()
 	}
 
-	peerConnection.addEventListener('connectionstatechange', () => {
+	// Handle call end
+	onSnapshot(doc(database, 'calls', callId), snapshot => {
+		const data = snapshot.data()
+		if (data?.ended) {
+			onDisconnect()
+			updateDoc(doc(database, 'calls', callId), {
+				ended: true,
+			})
+		}
+	})
+
+	peerConnection.addEventListener('connectionstatechange', async () => {
 		if (
 			peerConnection.connectionState === 'disconnected' ||
 			peerConnection.connectionState === 'failed'
 		) {
 			console.log('WebRTC connection has been disconnected')
 			onDisconnect()
+			updateDoc(doc(database, 'calls', callId), {
+				ended: true,
+			})
 		}
 	})
 
 	return {
 		remoteStream,
 		peerConnection,
+	}
+}
+
+export const endCall = async (callId: string): Promise<void> => {
+	try {
+		await updateDoc(doc(database, 'calls', callId), {
+			ended: true,
+		})
+	} catch {
+		console.error('Unable to end the call')
+		return Promise.reject()
 	}
 }

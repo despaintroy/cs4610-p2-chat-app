@@ -225,6 +225,7 @@ const useVideoCall = (): UseVideoCallReturnType => {
 	}
 
 	const handleDisconnectCall = (callback?: () => void): void => {
+		callId && videoCallFunctions.endCall(callId)
 		incomingStream?.getTracks().forEach(track => track.stop())
 		peerConnection?.close()
 		setCallStatus(CallStatus.DISCONNECTED)
