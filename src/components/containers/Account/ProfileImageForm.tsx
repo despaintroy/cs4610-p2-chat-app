@@ -1,5 +1,5 @@
-import FileInput from '@brainhubeu/react-file-input'
-import '@brainhubeu/react-file-input/dist/react-file-input.css'
+// import FileInput from '@brainhubeu/react-file-input'
+// import '@brainhubeu/react-file-input/dist/react-file-input.css'
 import { Avatar, Button, Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { FormErrorMessage } from 'components/common/FormComponents'
@@ -36,21 +36,24 @@ const ProfileImageForm: FC = (): React.ReactElement => {
 				isSubmitting ? (
 					<Typography variant='body1'>Submitting...</Typography>
 				) : (
-					<FileInput
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						onChangeCallback={(r: any): void => {
-							updateImage(r.value)
-						}}
-						scaleOptions={{
-							width: 128,
-							height: 128,
-						}}
-						label='Upload Image'
-						cropAspectRatio={1}
-						className='avatar-file-input'
-						dropAreaClassName='drop-area'
-						cropTool
-					/>
+					<></>
+					// TODO: Add file input
+
+					// <FileInput
+					// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					// 	onChangeCallback={(r: any): void => {
+					// 		updateImage(r.value)
+					// 	}}
+					// 	scaleOptions={{
+					// 		width: 128,
+					// 		height: 128,
+					// 	}}
+					// 	label='Upload Image'
+					// 	cropAspectRatio={1}
+					// 	className='avatar-file-input'
+					// 	dropAreaClassName='drop-area'
+					// 	cropTool
+					// />
 				)
 			) : (
 				<Stack>
